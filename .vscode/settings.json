@@ -1,0 +1,9 @@
+{
+  // Usar el intérprete del venv del workspace
+  "python.defaultInterpreterPath": "d:\\Angel Fuhrer\\Programacion\\Proyectos\\Proyectos 2025-2\\DevCommunity\\venv\\Scripts\\python.exe",
+
+  // Añadir la raíz del workspace al PYTHONPATH para que `import app...` funcione en Pylance
+  "python.analysis.extraPaths": [
+    "."
+  ]
+}
