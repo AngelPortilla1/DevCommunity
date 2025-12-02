@@ -26,32 +26,32 @@ Content-Type: application/json
 
 ### VERIFICAR TOKEN
 GET http://127.0.0.1:8000/auth/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDQ0MjYxMX0.WwAGBrABqqHucqPkjBbjAwV86DGLf_HEzgwrO0KF2Mo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE
 
 
 ### CREAR POST
 POST http://127.0.0.1:8000/posts/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDQ0MjY3M30.LAGRmS5O6qyzE7nrBVU85ILrupHZRCbU0nivn_-31Do
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE
 Content-Type: application/json
 
 {
-  "title": "Nueva publicacion de facebook ",
-  "content": "Hola a todos, esta es mi primera publicacion en esta plataforma!"
+  "title": "Nueva post , prueba v3 ",
+  "content": "Hola a todos como estan!"
 }
 
 ### OBTENER POSTS
 GET http://localhost:8000/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcnVlYmFAZXhhbXBsZS5jb20iLCJleHAiOjE3NjQ2NTAwODV9.CSFjzJNbiLv8VMyd_G02pOVmheS7OJQTiLENZiGkCn4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcnVlYmFAZXhhbXBsZS5jb20iLCJleHAiOjE3NjQ2NTM1NTd9.YZTS029fDX4fbCg5WBZVBoGGCzoIDaK8USDQ3saGn0M
 
 
 ### obtener post por id
-GET http://localhost:8000/posts/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcnVlYmFAZXhhbXBsZS5jb20iLCJleHAiOjE3NjQ0NDE4Nzl9.sskzWxi8N2Dw4Dxw408uYEKBKb6H23yvzh5yVZKVVWo 
+GET http://localhost:8000/posts/5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE
 
 
 ### EDITAR POST
-PUT http://localhost:8000/posts/4
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcnVlYmFAZXhhbXBsZS5jb20iLCJleHAiOjE3NjQ0Mzk4OTJ9.yedjbFpT8T3vHhy7PG7HQQIhX4J6oaD8wX66KgPQCqU
+PUT http://localhost:8000/posts/5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE
 Content-Type: application/json
 
 {
@@ -61,7 +61,5 @@ Content-Type: application/json
 
 
 ### BORRAR POST
-DELETE http://localhost:8000/posts/4
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcnVlYmFAZXhhbXBsZS5jb20iLCJleHAiOjE3NjQ0Mzk4OTJ9.yedjbFpT8T3vHhy7PG7HQQIhX4J6oaD8wX66KgPQCqU
-
-
+DELETE http://localhost:8000/posts/5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE

@@ -55,7 +55,8 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     new_user = User(
         username=user.username,
         email=user.email,
-        hashed_password=hashed_password
+        hashed_password=hashed_password,
+        role="user"  # Asignar explícitamente rol de usuario normal
     )
     db.add(new_user)
     db.commit()
