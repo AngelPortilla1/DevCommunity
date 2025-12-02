@@ -7,6 +7,7 @@ from app.schemas import PostCreate, PostResponse
 
 from app.auth.auth_bearer import JWTBearer
 from app.auth.auth_handler import decode_access_token
+from app.auth.dependencies import admin_only
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -47,7 +48,8 @@ def create_post(
 
 # ▶️ Obtener todos los posts (público)
 @router.get("/", response_model=list[PostResponse])
-def get_posts(db: Session = Depends(get_db)):
+def get_posts(current_admin: User = Depends(admin_only), db: Session = Depends(get_db)):
+    # Requiere rol admin (admin_only) y luego devuelve todos los posts
     return db.query(Post).all()
 
 #Obtener post por id (público)
