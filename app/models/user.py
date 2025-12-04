@@ -13,6 +13,6 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     posts = relationship("Post", back_populates="author", cascade="all, delete")
-    comments = relationship("Comment", back_populates="author", cascade="all, delete")
     likes = relationship("Like", back_populates="user", cascade="all, delete")
     role = Column(String, default="user")  # "user" o "admin"
+    comments = relationship("Comment", back_populates="author", cascade="all, delete")

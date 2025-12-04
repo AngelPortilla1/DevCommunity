@@ -50,3 +50,20 @@ class PostResponse(BaseModel):
     
     # CONFIGURACIÓN PYDANTIC V2
     model_config = ConfigDict(from_attributes=True)
+    
+    
+    # ------- Comment Schemas -------
+
+class CommentCreate(BaseModel):
+    content: str
+
+class CommentResponse(BaseModel):
+    id: int
+    content: str
+    author_id: int
+    post_id: int
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+
+    class Config:
+        orm_mode = True

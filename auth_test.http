@@ -15,7 +15,7 @@ POST http://127.0.0.1:8000/auth/login
 Content-Type: application/json
 
 {
-  "email": "prueba@example.com",
+  "email": "generico@example.com",
   "password": "12345678"
 }
 
@@ -31,7 +31,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb
 
 ### CREAR POST
 POST http://127.0.0.1:8000/posts/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDgyMTk4Mn0.n3r9weJdIxweExHqmcQ_7vdlc1Z1CTlfQ85Hiz0nZzw
 Content-Type: application/json
 
 {
