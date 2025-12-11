@@ -65,5 +65,16 @@ class CommentResponse(BaseModel):
     created_at: datetime | None = None
     updated_at: datetime | None = None
 
-    class Config:
-        orm_mode = True
+    # CONFIGURACIÓN PYDANTIC V2
+    model_config = ConfigDict(from_attributes=True)
+        
+        
+        
+class PaginatedPosts(BaseModel):
+    page: int
+    limit: int
+    total: int
+    data: list[PostResponse]
+
+    # CONFIGURACIÓN PYDANTIC V2
+    model_config = ConfigDict(from_attributes=True)

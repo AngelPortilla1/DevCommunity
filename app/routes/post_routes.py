@@ -1,16 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.post import Post
 from app.models.user import User
-from app.schemas import PostCreate, PostResponse
+from app.schemas import PostCreate, PostResponse, PaginatedPosts
 
 # Importar dependencias desde auth
 from app.auth.dependencies import get_current_user, admin_only
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
-# ▶️ Crear post (solo autenticado)
+#  Crear post (solo autenticado)
 @router.post("/", response_model=PostResponse)
 def create_post(
     post: PostCreate,
@@ -31,15 +31,38 @@ def create_post(
     return new_post
 
 
-# ▶️ Obtener todos los posts
-@router.get("/", response_model=list[PostResponse])
-def get_posts(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Obtener posts. Usuarios ven solo los suyos, admins ven todos."""
-    print(f"DEBUG: user_id={current_user.id}, email={current_user.email}, role={current_user.role!r}")
+#  Obtener posts (con paginación)
+@router.get("/", response_model=PaginatedPosts)
+def get_posts(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    
+
+    # Base query según rol
     if current_user.role == "admin":
-        return db.query(Post).all()
-    # Usuario normal: solo sus posts
-    return db.query(Post).filter(Post.author_id == current_user.id).all()
+        query = db.query(Post)
+    else:
+        query = db.query(Post).filter(Post.author_id == current_user.id)
+
+    total = query.count()
+    skip = (page - 1) * limit
+
+    posts = (
+        query.order_by(Post.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+    return {
+        "page": page,
+        "limit": limit,
+        "total": total,
+        "data": posts
+    }
 
 
 # ▶️ Obtener post por id

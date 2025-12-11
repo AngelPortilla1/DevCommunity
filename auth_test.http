@@ -26,22 +26,22 @@ Content-Type: application/json
 
 ### VERIFICAR TOKEN
 GET http://127.0.0.1:8000/auth/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
 
 
 ### CREAR POST
 POST http://127.0.0.1:8000/posts/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDgyMTk4Mn0.n3r9weJdIxweExHqmcQ_7vdlc1Z1CTlfQ85Hiz0nZzw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
 Content-Type: application/json
 
 {
-  "title": "Nueva post , prueba v3 ",
-  "content": "Hola a todos como estan!"
+  "title": "V9 post listo",
+  "content": "devCommunity es lo mejor"
 }
 
 ### OBTENER POSTS
 GET http://localhost:8000/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcnVlYmFAZXhhbXBsZS5jb20iLCJleHAiOjE3NjQ2NTM1NTd9.YZTS029fDX4fbCg5WBZVBoGGCzoIDaK8USDQ3saGn0M
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
 
 
 ### obtener post por id
@@ -63,3 +63,10 @@ Content-Type: application/json
 ### BORRAR POST
 DELETE http://localhost:8000/posts/5
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE
+
+
+
+
+### OBTENER POSTS PAGINADOS
+GET http://localhost:8000/posts?page=1&limit=3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
