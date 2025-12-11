@@ -21,5 +21,5 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4Y
 
 
 ### OBTENER POSTS como admin   
-GET http://localhost:8000/posts?search=tutor
-Authorization: Bearer TOKEN_ADMIN
+GET http://localhost:8000/posts?search=python
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDM1NjEzfQ.HXLPSca64wq4zx2uzpKTDoE5hg2fVRn_X7VHat1MKK4

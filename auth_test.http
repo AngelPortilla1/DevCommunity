@@ -26,12 +26,12 @@ Content-Type: application/json
 
 ### VERIFICAR TOKEN
 GET http://127.0.0.1:8000/auth/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTQzMzE0MX0.4HN6UJHk7xsbQLLRwxYvKzJ9xlH1KK_c-yhgoMC0FBg
 
 
 ### CREAR POST
 POST http://127.0.0.1:8000/posts/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTQzNTI4MH0.2xFMIizknhkXaoLVQdnRIzIJBsp2BOBcMeqsS-btC7Y
 Content-Type: application/json
 
 {
@@ -41,17 +41,17 @@ Content-Type: application/json
 
 ### OBTENER POSTS
 GET http://localhost:8000/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTQzNTI4MH0.2xFMIizknhkXaoLVQdnRIzIJBsp2BOBcMeqsS-btC7Y
 
 
 ### obtener post por id
 GET http://localhost:8000/posts/5
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTQzNTI4MH0.2xFMIizknhkXaoLVQdnRIzIJBsp2BOBcMeqsS-btC7Y
 
 
 ### EDITAR POST
-PUT http://localhost:8000/posts/5
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE
+PUT http://localhost:8000/posts/8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDM1NjEzfQ.HXLPSca64wq4zx2uzpKTDoE5hg2fVRn_X7VHat1MKK4
 Content-Type: application/json
 
 {
@@ -62,6 +62,6 @@ Content-Type: application/json
 
 ### BORRAR POST
 DELETE http://localhost:8000/posts/5
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTQzNTI4MH0.2xFMIizknhkXaoLVQdnRIzIJBsp2BOBcMeqsS-btC7Y
 
 
