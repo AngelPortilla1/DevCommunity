@@ -35,7 +35,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4Y
 Content-Type: application/json
 
 {
-  "title": "V9 post listo",
+  "title": "Proyecto Python dev",
   "content": "devCommunity es lo mejor"
 }
 
@@ -65,8 +65,3 @@ DELETE http://localhost:8000/posts/5
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDY1MjgxMX0.RQcJ7ga17MHpAUyEbEBcbhTgjBL9rvWfiL37ekkXhIE
 
 
-
-
-### OBTENER POSTS PAGINADOS
-GET http://localhost:8000/posts?page=1&limit=3
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM

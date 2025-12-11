@@ -1,0 +1,25 @@
+
+
+### OBTENER POSTS PAGINADOS
+GET http://localhost:8000/posts?page=1&limit=3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
+
+### OBTENER POSTS CON BUSQUEDA
+GET http://localhost:8000/posts?search=python
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
+
+
+
+### OBTENER POSTS CON BUSQUEDA Y PAGINACION
+GET http://localhost:8000/posts?search=hola&page=1&limit=3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
+
+
+### OBTENER POSTS CON BUSQUEDA SIMPLE
+GET http://localhost:8000/posts?search=prueba
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
+
+
+### OBTENER POSTS como admin   
+GET http://localhost:8000/posts?search=tutor
+Authorization: Bearer TOKEN_ADMIN

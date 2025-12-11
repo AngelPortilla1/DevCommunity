@@ -4,7 +4,7 @@ from app.core.database import get_db
 from app.models.post import Post
 from app.models.user import User
 from app.schemas import PostCreate, PostResponse, PaginatedPosts
-
+from sqlalchemy import or_
 # Importar dependencias desde auth
 from app.auth.dependencies import get_current_user, admin_only
 
@@ -30,22 +30,30 @@ def create_post(
 
     return new_post
 
-
-#  Obtener posts (con paginación)
+#  Obtener posts (con paginación + búsqueda)
 @router.get("/", response_model=PaginatedPosts)
 def get_posts(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
+    search: str | None = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    
 
     # Base query según rol
     if current_user.role == "admin":
         query = db.query(Post)
     else:
         query = db.query(Post).filter(Post.author_id == current_user.id)
+
+    # 🔍 Filtro de búsqueda
+    if search:
+        query = query.filter(
+            or_(
+                Post.title.ilike(f"%{search}%"),
+                Post.content.ilike(f"%{search}%")
+            )
+        )
 
     total = query.count()
     skip = (page - 1) * limit
@@ -63,6 +71,8 @@ def get_posts(
         "total": total,
         "data": posts
     }
+
+
 
 
 # ▶️ Obtener post por id
@@ -145,3 +155,10 @@ def fix_user_roles(current_user: User = Depends(admin_only), db: Session = Depen
         "message": "Roles corregidos",
         "users": [{"id": u.id, "email": u.email, "role": u.role} for u in all_users]
     }
+    
+    
+    
+    
+    
+
+
