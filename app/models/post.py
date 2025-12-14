@@ -2,6 +2,9 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 from datetime import datetime
+from fastapi import Query
+from datetime import date
+
 
 class Post(Base):
     __tablename__ = "posts"

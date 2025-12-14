@@ -6,7 +6,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4Y
 
 ### OBTENER POSTS CON BUSQUEDA
 GET http://localhost:8000/posts?search=python
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTY4NTYyNX0.SB26WMULkqwXswaOGrJwLrkpyH80bynKQM40pR2MTys
 
 
 
@@ -23,3 +23,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4Y
 ### OBTENER POSTS como admin   
 GET http://localhost:8000/posts?search=python
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDM1NjEzfQ.HXLPSca64wq4zx2uzpKTDoE5hg2fVRn_X7VHat1MKK4
+
+
+### OBTENER TODOS LOS POST POR FECHA
+GET http://localhost:8000/posts?from_date=2025-12-11&to_date=2025-12-11
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTY4NTYyNX0.SB26WMULkqwXswaOGrJwLrkpyH80bynKQM40pR2MTys

@@ -7,6 +7,9 @@ from app.schemas import PostCreate, PostResponse, PaginatedPosts
 from sqlalchemy import or_
 # Importar dependencias desde auth
 from app.auth.dependencies import get_current_user, admin_only
+from datetime import date
+from datetime import datetime, time
+
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -32,29 +35,42 @@ def create_post(
 
 #  Obtener posts (con paginación + búsqueda)
 @router.get("/", response_model=PaginatedPosts)
+@router.get("/", response_model=PaginatedPosts)
 def get_posts(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
-    search: str | None = None,
+    search: str | None = Query(None),
+    author_id: int | None = Query(None),
+    from_date: date | None = Query(None),
+    to_date: date | None = Query(None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-
-    # Base query según rol
+    # 1️⃣ Base query según rol
     if current_user.role == "admin":
         query = db.query(Post)
+        if author_id:
+            query = query.filter(Post.author_id == author_id)
     else:
         query = db.query(Post).filter(Post.author_id == current_user.id)
 
-    # 🔍 Filtro de búsqueda
+    # 2️⃣ Búsqueda
     if search:
         query = query.filter(
-            or_(
-                Post.title.ilike(f"%{search}%"),
-                Post.content.ilike(f"%{search}%")
-            )
+            Post.title.ilike(f"%{search}%") |
+            Post.content.ilike(f"%{search}%")
         )
 
+    # 3️⃣ Filtros por fecha
+    if from_date:
+        start_datetime = datetime.combine(from_date, time.min)
+        query = query.filter(Post.created_at >= start_datetime)
+
+    if to_date:
+        end_datetime = datetime.combine(to_date, time.max)
+        query = query.filter(Post.created_at <= end_datetime)
+
+    # 4️⃣ Paginación
     total = query.count()
     skip = (page - 1) * limit
 
@@ -71,6 +87,7 @@ def get_posts(
         "total": total,
         "data": posts
     }
+
 
 
 
