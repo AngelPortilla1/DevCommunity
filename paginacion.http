@@ -2,29 +2,28 @@
 
 ### OBTENER POSTS PAGINADOS
 GET http://localhost:8000/posts?page=1&limit=3
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4NzU1fQ.E3vDsNRyke-YVSRoZ_33J09WQe9XjuUU4otP28Q3R44
 
 ### OBTENER POSTS CON BUSQUEDA
-GET http://localhost:8000/posts?search=python
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTY4NTYyNX0.SB26WMULkqwXswaOGrJwLrkpyH80bynKQM40pR2MTys
+GET http://localhost:8000/posts?search=dev
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4NzU1fQ.E3vDsNRyke-YVSRoZ_33J09WQe9XjuUU4otP28Q3R44
 
 
 
 ### OBTENER POSTS CON BUSQUEDA Y PAGINACION
 GET http://localhost:8000/posts?search=hola&page=1&limit=3
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4NzU1fQ.E3vDsNRyke-YVSRoZ_33J09WQe9XjuUU4otP28Q3R44
 
 
 ### OBTENER POSTS CON BUSQUEDA SIMPLE
 GET http://localhost:8000/posts?search=prueba
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDMwNzUxfQ.GqYmwpAq7dvHo9YCieYvzSzw1tO9zgopO4lz3ZOyCdM
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4NzU1fQ.E3vDsNRyke-YVSRoZ_33J09WQe9XjuUU4otP28Q3R44
 
 ### OBTENER POSTS como admin   
 GET http://localhost:8000/posts?search=python
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDM1NjEzfQ.HXLPSca64wq4zx2uzpKTDoE5hg2fVRn_X7VHat1MKK4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4NzU1fQ.E3vDsNRyke-YVSRoZ_33J09WQe9XjuUU4otP28Q3R44
 
 
 ### OBTENER TODOS LOS POST POR FECHA
 GET http://localhost:8000/posts?from_date=2025-12-11&to_date=2025-12-11
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTY4NTYyNX0.SB26WMULkqwXswaOGrJwLrkpyH80bynKQM40pR2MTys
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4NzU1fQ.E3vDsNRyke-YVSRoZ_33J09WQe9XjuUU4otP28Q3R44

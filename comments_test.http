@@ -1,6 +1,6 @@
 ### Crear comentario
 POST http://localhost:8000/comments/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDgyMTk4Mn0.n3r9weJdIxweExHqmcQ_7vdlc1Z1CTlfQ85Hiz0nZzw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NjAwNjMwNn0.cKvEcnJpsZm4mi1pj5YLUCcMfiJ2iCf8MBzYuBQ1YM8
 Content-Type: application/json
 
 {

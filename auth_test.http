@@ -15,7 +15,7 @@ POST http://127.0.0.1:8000/auth/login
 Content-Type: application/json
 
 {
-  "email": "generico@example.com",
+  "email": "user@example.com",
   "password": "12345678"
 }
 
@@ -31,38 +31,38 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb
 
 ### CREAR POST
 POST http://127.0.0.1:8000/posts/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTQzNTI4MH0.2xFMIizknhkXaoLVQdnRIzIJBsp2BOBcMeqsS-btC7Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4MTM1fQ.6nxOoHYj8SPeyOyNQtcpyd9JJTCEFKf8F9xGBStX6pY
 Content-Type: application/json
 
 {
-  "title": "Proyecto Python dev",
-  "content": "devCommunity es lo mejor"
+  "title": "tttt prueba numero 3",
+  "content": "que haces"
 }
 
 ### OBTENER POSTS
 GET http://localhost:8000/posts?author_id=1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTk0ODAwMX0.2ZcXY71e9FEC4bSXdtGEOmmmEN5fNdNd5WsLLimglwI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4MTM1fQ.6nxOoHYj8SPeyOyNQtcpyd9JJTCEFKf8F9xGBStX6pY
 
 
 
 ### obtener post por id
-GET http://localhost:8000/posts/5
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTQzNTI4MH0.2xFMIizknhkXaoLVQdnRIzIJBsp2BOBcMeqsS-btC7Y
+GET http://localhost:8000/posts/12
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NjAwNjMwNn0.cKvEcnJpsZm4mi1pj5YLUCcMfiJ2iCf8MBzYuBQ1YM8
 
 
 ### EDITAR POST
-PUT http://localhost:8000/posts/8
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY1NDM1NjEzfQ.HXLPSca64wq4zx2uzpKTDoE5hg2fVRn_X7VHat1MKK4
+PUT http://localhost:8000/posts/9
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4NzU1fQ.E3vDsNRyke-YVSRoZ_33J09WQe9XjuUU4otP28Q3R44
 Content-Type: application/json
 
 {
-  "title": "Post Nuevo",
-  "content": "Contenido editado x2"
+  "title": "NuevoPost",
+  "content": "Contenido editado x3"
 }
 
 
 ### BORRAR POST
-DELETE http://localhost:8000/posts/5
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTQzNTI4MH0.2xFMIizknhkXaoLVQdnRIzIJBsp2BOBcMeqsS-btC7Y
+DELETE http://localhost:8000/posts/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4NzU1fQ.E3vDsNRyke-YVSRoZ_33J09WQe9XjuUU4otP28Q3R44
 
 
