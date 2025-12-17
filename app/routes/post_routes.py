@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.post import Post
@@ -9,6 +9,7 @@ from sqlalchemy import or_
 from app.auth.dependencies import get_current_user, admin_only
 from datetime import date
 from datetime import datetime, time
+from app.models import  Like
 
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -34,7 +35,7 @@ def create_post(
     return new_post
 
 #  Obtener posts (con paginación + búsqueda)
-@router.get("/", response_model=PaginatedPosts)
+
 @router.get("/", response_model=PaginatedPosts)
 def get_posts(
     page: int = Query(1, ge=1),
@@ -80,12 +81,31 @@ def get_posts(
         .limit(limit)
         .all()
     )
+    # 5️⃣ CONSTRUCCIÓN DE DATA CON LIKES 👈 AQUÍ VA
+    posts_data = []
+
+    for post in posts:
+        likes_count = len(post.likes)
+        liked_by_me = any(
+            like.user_id == current_user.id
+            for like in post.likes
+        )
+
+        posts_data.append({
+            "id": post.id,
+            "title": post.title,
+            "content": post.content,
+            "created_at": post.created_at,
+            "author": post.author,
+            "likes_count": likes_count,
+            "liked_by_me": liked_by_me,
+        })
 
     return {
         "page": page,
         "limit": limit,
         "total": total,
-        "data": posts
+        "data": posts_data
     }
 
 
@@ -172,9 +192,66 @@ def fix_user_roles(current_user: User = Depends(admin_only), db: Session = Depen
         "message": "Roles corregidos",
         "users": [{"id": u.id, "email": u.email, "role": u.role} for u in all_users]
     }
+  
+  
+  
+    
+ #RUTAS DE LIKES   
+ 
+@router.post("/{post_id}/like", status_code=status.HTTP_201_CREATED)
+def like_post(
+    post_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    existing_like = db.query(Like).filter(
+        Like.post_id == post_id,
+        Like.user_id == current_user.id
+    ).first()
+
+    if existing_like:
+        raise HTTPException(
+            status_code=400,
+            detail="You already liked this post"
+        )
+
+    like = Like(
+        user_id=current_user.id,
+        post_id=post_id
+    )
+    db.add(like)
+    db.commit()
+
+    return {"message": "Post liked"}
     
     
-    
+#BORRAR UN LIKE DE UN POST 
+@router.delete("/{post_id}/like", status_code=status.HTTP_200_OK)
+def unlike_post(
+    post_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    like = db.query(Like).filter(
+        Like.post_id == post_id,
+        Like.user_id == current_user.id
+    ).first()
+
+    if not like:
+        raise HTTPException(
+            status_code=404,
+            detail="Like not found"
+        )
+
+    db.delete(like)
+    db.commit()
+
+    return {"message": "Like removed"}
+
    
     
     

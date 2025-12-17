@@ -42,8 +42,10 @@ class PostResponse(BaseModel):
     id: int
     title: str
     content: str
-    author_id: int
+    author: UserResponse
     created_at: datetime
+    likes_count: int
+    liked_by_me: bool
     
     # Relación opcional: Evita errores 500 si SQLAlchemy no carga el autor inmediatamente
     author: Optional[UserResponse] = None 

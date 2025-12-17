@@ -41,7 +41,8 @@ Content-Type: application/json
 
 ### OBTENER POSTS
 GET http://localhost:8000/posts?author_id=1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTY4NTYyNX0.SB26WMULkqwXswaOGrJwLrkpyH80bynKQM40pR2MTys
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTk0ODAwMX0.2ZcXY71e9FEC4bSXdtGEOmmmEN5fNdNd5WsLLimglwI
+
 
 
 ### obtener post por id

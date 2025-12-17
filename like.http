@@ -1,0 +1,11 @@
+### Like post
+POST http://localhost:8000/posts/2/like
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTk0ODk3MH0.WvbQysnXzeCe19-Kk86KHNtllSjRtofA55hcwa33sjI
+
+### Unlike post
+DELETE http://localhost:8000/posts/1/like
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTk0ODAwMX0.2ZcXY71e9FEC4bSXdtGEOmmmEN5fNdNd5WsLLimglwI
+
+### Get posts
+GET http://localhost:8000/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTk0ODk3MH0.WvbQysnXzeCe19-Kk86KHNtllSjRtofA55hcwa33sjI
