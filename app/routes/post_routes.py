@@ -17,6 +17,8 @@ from app.exceptions.post_exceptions import PostNotFound, ForbiddenAction
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
+
+#Crear post 
 @router.post("/", response_model=PostResponse)
 def create_post(
     post: PostCreate,
