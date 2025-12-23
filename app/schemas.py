@@ -52,7 +52,17 @@ class PostResponse(BaseModel):
     
     # CONFIGURACIÓN PYDANTIC V2
     model_config = ConfigDict(from_attributes=True)
-    
+
+
+# ------- User Public Schema -------
+
+class UserPublicResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+
+    model_config = ConfigDict(from_attributes=True)
+
     
     # ------- Comment Schemas -------
 
@@ -62,7 +72,7 @@ class CommentCreate(BaseModel):
 class CommentResponse(BaseModel):
     id: int
     content: str
-    author_id: int
+    author: UserPublicResponse
     post_id: int
     created_at: datetime | None = None
     updated_at: datetime | None = None

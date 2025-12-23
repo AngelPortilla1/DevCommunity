@@ -1,6 +1,6 @@
 ### Crear comentario
-POST http://localhost:8000/comments/2
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MzU5OTEzfQ.1vyHVtNxKdMDyFs1urgNPbPErG70jGyYHFX1D_liYP0
+POST http://localhost:8000/comments/3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2NTA3MzQ2fQ.0RcJsCbvO8_rvG1TL3rJ2BtkOh5Ui_lLRth19olbP0E
 Content-Type: application/json
 
 {
@@ -17,7 +17,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb
 
 ### Editar comentario
 PUT http://localhost:8000/comments/2
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY0ODIyODY0fQ.ftNEpyUSl32p8NfzPVx-zsUvGXsXCUi3Ddl7kzALpYg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2NTA3MzQ2fQ.0RcJsCbvO8_rvG1TL3rJ2BtkOh5Ui_lLRth19olbP0E
 Content-Type: application/json
 
 {
