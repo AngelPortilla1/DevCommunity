@@ -81,7 +81,14 @@ class CommentResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
         
         
-        
+#Actualiar comentario : 
+    
+class CommentUpdate(BaseModel):
+    content: str
+
+
+
+    
 class PaginatedPosts(BaseModel):
     page: int
     limit: int

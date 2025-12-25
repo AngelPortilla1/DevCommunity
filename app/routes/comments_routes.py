@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status, Response
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.coments import Comment
 from app.models.post import Post
 from app.models.user import User
-from app.schemas import CommentCreate, CommentResponse
+from app.schemas import CommentCreate, CommentResponse, CommentUpdate
 from app.auth.dependencies import get_current_user
 from app.exceptions.comment_exceptions import (
     CommentNotFound,
@@ -57,7 +57,7 @@ def get_comments(post_id: int, db: Session = Depends(get_db)):
 @router.put("/{comment_id}", response_model=CommentResponse)
 def update_comment(
     comment_id: int,
-    comment: CommentCreate,
+    comment: CommentUpdate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -77,7 +77,7 @@ def update_comment(
 
 
 # Eliminar comentario (dueño o admin)
-@router.delete("/{comment_id}")
+@router.delete("/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_comment(
     comment_id: int,
     current_user: User = Depends(get_current_user),
@@ -97,4 +97,4 @@ def delete_comment(
     db.delete(comment_db)
     db.commit()
 
-    return {"message": "Comentario eliminado"}
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
