@@ -1,22 +1,22 @@
 ### Crear comentario
-POST http://localhost:8000/comments/3
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2NTA3MzQ2fQ.0RcJsCbvO8_rvG1TL3rJ2BtkOh5Ui_lLRth19olbP0E
+POST http://localhost:8000/comments/12
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2NzA5MzkzfQ.BYfjSRYw1M0qUCODj_MC9kCNauDrIw2-rc9D8JZPYi0
 Content-Type: application/json
 
 {
-  "content": "Comentarioxd"
+  "content": "Nueva prueba de comentario para probar el id de comentario del post"
 }
 
 
 
 ### Obtener comentarios de un post
-GET  http://localhost:8000/comments/post/1
+GET  http://localhost:8000/comments/post/12
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NDgyMTk4Mn0.n3r9weJdIxweExHqmcQ_7vdlc1Z1CTlfQ85Hiz0nZzI
 
 
 
 ### Editar comentario
-PUT http://localhost:8000/comments/9
+PUT http://localhost:8000/comments/10
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2NzA5MzkzfQ.BYfjSRYw1M0qUCODj_MC9kCNauDrIw2-rc9D8JZPYi0
 Content-Type: application/json
 
@@ -26,5 +26,5 @@ Content-Type: application/json
 
 
 ### Eliminar comentario
-DELETE http://localhost:8000/comments/9
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY0ODIyODY0fQ.ftNEpyUSl32p8NfzPVx-zsUvGXsXCUi3Ddl7kzALpYg
+DELETE http://localhost:8000/comments/8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2NzA5MzkzfQ.BYfjSRYw1M0qUCODj_MC9kCNauDrIw2-rc9D8JZPYi0

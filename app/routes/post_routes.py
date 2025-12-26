@@ -228,7 +228,16 @@ def like_post(
     db.add(like)
     db.commit()
 
-    return {"message": "Post liked"}
+    likes_count = (
+        db.query(Like)
+        .filter(Like.post_id == post_id)
+        .count()
+    )
+
+    return {
+        "liked": True,
+        "likes_count": likes_count
+    }
     
     
 #BORRAR UN LIKE DE UN POST 
@@ -252,7 +261,16 @@ def unlike_post(
     db.delete(like)
     db.commit()
 
-    return {"message": "Like removed"}
+    likes_count = (
+        db.query(Like)
+        .filter(Like.post_id == post_id)
+        .count()
+    )
+
+    return {
+        "liked": False,
+        "likes_count": likes_count
+    }
 
    
     
