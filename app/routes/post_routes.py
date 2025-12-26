@@ -1,3 +1,4 @@
+from app.models import post
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
@@ -36,7 +37,7 @@ def create_post(
     db.refresh(new_post)
 
     return map_post_to_response(new_post, current_user)
-    return new_post
+    
 
 #  Obtener posts (con paginación + búsqueda)
 
@@ -173,6 +174,9 @@ def delete_post(
 
     if post_db.author_id != current_user.id and current_user.role != "admin":
         raise ForbiddenAction()
+    
+    post_db.title = post.title
+    post_db.content = post.content
 
     db.delete(post_db)
     db.commit()

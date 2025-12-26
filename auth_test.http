@@ -26,12 +26,12 @@ Content-Type: application/json
 
 ### VERIFICAR TOKEN
 GET http://127.0.0.1:8000/auth/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NTQzMzE0MX0.4HN6UJHk7xsbQLLRwxYvKzJ9xlH1KK_c-yhgoMC0FBg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2NzEyNzQzfQ.THiKA1GUuk0WXgOSRy42ryG4N8j7_Tk4KZNMD8bYk9U
 
 
 ### CREAR POST
 POST http://127.0.0.1:8000/posts/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4MTM1fQ.6nxOoHYj8SPeyOyNQtcpyd9JJTCEFKf8F9xGBStX6pY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2NzEyNzQzfQ.THiKA1GUuk0WXgOSRy42ryG4N8j7_Tk4KZNMD8bYk9U
 Content-Type: application/json
 
 {
@@ -41,18 +41,18 @@ Content-Type: application/json
 
 ### OBTENER POSTS
 GET http://localhost:8000/posts?author_id=1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4MTM1fQ.6nxOoHYj8SPeyOyNQtcpyd9JJTCEFKf8F9xGBStX6pY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2NzEyNzQzfQ.THiKA1GUuk0WXgOSRy42ryG4N8j7_Tk4KZNMD8bYk9U
 
 
 
 ### obtener post por id
-GET http://localhost:8000/posts/12
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZW5lcmljb0BleGFtcGxlLmNvbSIsImV4cCI6MTc2NjAwNjMwNn0.cKvEcnJpsZm4mi1pj5YLUCcMfiJ2iCf8MBzYuBQ1YM8
+GET http://localhost:8000/posts/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2NzEyNzQzfQ.THiKA1GUuk0WXgOSRy42ryG4N8j7_Tk4KZNMD8bYk9U
 
 
 ### EDITAR POST
-PUT http://localhost:8000/posts/9
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4NzU1fQ.E3vDsNRyke-YVSRoZ_33J09WQe9XjuUU4otP28Q3R44
+PUT http://localhost:8000/posts/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2NzEyNzQzfQ.THiKA1GUuk0WXgOSRy42ryG4N8j7_Tk4KZNMD8bYk9U
 Content-Type: application/json
 
 {
