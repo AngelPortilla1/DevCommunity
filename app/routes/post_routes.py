@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.post import Post
 from app.models.user import User
+from sqlalchemy import func
+from app.models.like import Like
 from app.schemas import PostCreate, PostResponse, PaginatedPosts
 from sqlalchemy import or_
 # Importar dependencias desde auth
@@ -14,7 +16,11 @@ from app.models import  Like
 from app.mappers.post_mapper import map_post_to_response
 from sqlalchemy.orm import selectinload
 from app.exceptions.post_exceptions import PostNotFound, ForbiddenAction
-
+from app.repositories.like_repository import (
+    count_likes_for_post,
+    is_post_liked_by_user
+)
+from app.mappers.post_mapper import map_post_to_response
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -36,8 +42,13 @@ def create_post(
     db.commit()
     db.refresh(new_post)
 
-    return map_post_to_response(new_post, current_user)
+     # Nuevo post → no tiene likes
+    return map_post_to_response(
+        new_post,
+        likes_count=0,
+        liked_by_me=False
     
+    )
 
 #  Obtener posts (con paginación + búsqueda)
 
@@ -61,7 +72,6 @@ def get_posts(
         query = db.query(Post).filter(Post.author_id == current_user.id)
     
     query = query.options(
-        selectinload(Post.likes),
         selectinload(Post.author),
     )
 
@@ -91,23 +101,52 @@ def get_posts(
         .limit(limit)
         .all()
     )
-    # 5️⃣ CONSTRUCCIÓN DE DATA CON LIKES 👈 AQUÍ VA
-    posts_data = [
-    map_post_to_response(post, current_user)
-    for post in posts
-]
+    
+    post_ids = [post.id for post in posts]
 
-    return {
-        "page": page,
-        "limit": limit,
-        "total": total,
-        "data": posts_data
+    ## 5️⃣  Likes count por post
+    likes_counts = (
+        db.query(
+            Like.post_id,
+            func.count(Like.id).label("count")
+        )
+        .filter(Like.post_id.in_(post_ids))
+        .group_by(Like.post_id)
+        .all()
+    )
+
+    likes_count_map = {
+        post_id: count
+        for post_id, count in likes_counts
     }
 
+    # Likes del usuario actual
+    user_likes = (
+        db.query(Like.post_id)
+        .filter(
+            Like.post_id.in_(post_ids),
+            Like.user_id == current_user.id
+        )
+        .all()
+    )
+
+    liked_post_ids = {post_id for (post_id,) in user_likes}
+
+    # Construcción final
+    posts_data = [
+        map_post_to_response(
+            post,
+            likes_count=likes_count_map.get(post.id, 0),
+            liked_by_me=post.id in liked_post_ids,
+        )
+        for post in posts
+    ]
+    return { "page": page, "limit": limit, "total": total, "data": posts_data}
 
 
 
 
+#Obtener post por id
 @router.get("/{post_id}", response_model=PostResponse)
 def get_post(
     post_id: int,
@@ -118,7 +157,6 @@ def get_post(
         db.query(Post)
         .options(
             selectinload(Post.author),
-            selectinload(Post.likes),
         )
         .filter(Post.id == post_id)
         .first()
@@ -130,9 +168,15 @@ def get_post(
     if post.author_id != current_user.id and current_user.role != "admin":
         raise ForbiddenAction()
 
-    return map_post_to_response(post, current_user)
+    likes_count = count_likes_for_post(db, post.id)
+    liked_by_me = is_post_liked_by_user(db, post.id, current_user.id)
 
-
+    return map_post_to_response(
+        post,
+        likes_count,
+        liked_by_me
+    )
+# ▶️ Editar post (dueño)
 @router.put("/{post_id}", response_model=PostResponse)
 def update_post(
     post_id: int,
@@ -140,7 +184,15 @@ def update_post(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    post_db = db.query(Post).filter(Post.id == post_id).first()
+    post_db = (
+        db.query(Post)
+        .options(
+            selectinload(Post.author),
+            selectinload(Post.likes),
+        )
+        .filter(Post.id == post_id)
+        .first()
+    )
 
     if not post_db:
         raise PostNotFound()
@@ -154,10 +206,17 @@ def update_post(
     db.commit()
     db.refresh(post_db)
 
-    # ✅ DEVOLVER POST MAPEADO
-    return map_post_to_response(post_db, current_user)
+    likes_count = len(post_db.likes)
+    liked_by_me = any(
+        like.user_id == current_user.id
+        for like in post_db.likes
+    )
 
-
+    return map_post_to_response(
+        post_db,
+        likes_count=likes_count,
+        liked_by_me=liked_by_me,
+    )
 
 # ▶️ Eliminar post (dueño o admin)
 @router.delete("/{post_id}")
