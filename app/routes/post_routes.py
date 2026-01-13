@@ -233,9 +233,6 @@ def delete_post(
 
     if post_db.author_id != current_user.id and current_user.role != "admin":
         raise ForbiddenAction()
-    
-    post_db.title = post.title
-    post_db.content = post.content
 
     db.delete(post_db)
     db.commit()

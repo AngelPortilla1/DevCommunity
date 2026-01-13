@@ -61,7 +61,7 @@ Content-Type: application/json
 
 
 ### BORRAR POST
-DELETE http://localhost:8000/posts/2
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2MDA4NzU1fQ.E3vDsNRyke-YVSRoZ_33J09WQe9XjuUU4otP28Q3R44
+DELETE http://localhost:8000/posts/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzY2ODk1NDcwfQ.zco9bobCdpCp6jPkDcpVo5jRcT4_ID-DKfGu6ff3Kgs
 
 
