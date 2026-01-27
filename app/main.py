@@ -9,10 +9,18 @@ from app.routes import comments_routes
 from app.exceptions.base import AppException
 from app.core.exceptions_handlers import app_exception_handler
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="DevCommunity API", version="0.1.0")
 
-
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200", "http://localhost:4201"],  # Puertos del frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.exception_handler(PostNotFound)
 async def post_not_found_handler(request: Request, exc: PostNotFound):
