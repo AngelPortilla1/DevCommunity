@@ -77,7 +77,7 @@ def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
     if not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
-    token = create_access_token({"sub": user.email})
+    token = create_access_token({"sub": user.email,"user_id": user.id})
     return {
         "access_token": token,
         "token_type": "bearer"
@@ -85,12 +85,24 @@ def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
     
     
 @router.get("/me")
-def get_me(token: str = Depends(oauth2_scheme)):
+def get_me(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
     payload = decode_access_token(token)
     if not payload:
         raise HTTPException(status_code=403, detail="Token inválido o expirado")
-    
+
+    user_id = payload.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=403, detail="Token malformado")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
     return {
-        "email": payload.get("sub"),
-        "message": "Token válido"
+        "id": user.id,
+        "email": user.email,
+        "username": user.username
     }
