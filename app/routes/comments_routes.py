@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Response
+from fastapi import APIRouter, Depends, status, Response, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -43,9 +43,18 @@ def create_comment(
     return map_comment_to_response(new_comment)
 
 
-# Obtener comentarios de un post
+# Obtener comentarios de un post (requiere autenticación)
 @router.get("/post/{post_id}", response_model=list[CommentResponse])
-def get_comments(post_id: int, db: Session = Depends(get_db)):
+def get_comments(
+    post_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Verificar que el post existe
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise PostNotFound()
+
     comments = db.query(Comment).filter(Comment.post_id == post_id).all()
 
     return [
