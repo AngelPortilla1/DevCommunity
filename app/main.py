@@ -2,8 +2,9 @@ from app.exceptions.post_exceptions import ForbiddenAction, PostNotFound
 from fastapi import FastAPI, Request
 from app.api import routes_test
 from app.auth import auth_routes
-from app.core.database import Base, engine
-from app.models import user, post, coments, like, follows
+from app.db.base import Base
+from app.db.session import engine
+from app.models import user, post, comment, like, follows
 from app.routers import post_router, comment_router, like_router, follower_router
 from app.exceptions.base import AppException
 from app.core.exceptions_handlers import app_exception_handler

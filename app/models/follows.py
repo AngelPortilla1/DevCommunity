@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, ForeignKey, UniqueConstraint
-from app.core.database import Base
+from app.db.base import Base
 
 class Follow(Base):
     __tablename__ = "follows"

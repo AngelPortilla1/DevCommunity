@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, status, Response
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
+from app.db.session import get_db
 from app.schemas import CommentCreate, CommentResponse, CommentUpdate
-from app.auth.dependencies import get_current_user
+from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.services.comment_service import CommentService
 from app.mappers.comment_mapper import map_comment_to_response

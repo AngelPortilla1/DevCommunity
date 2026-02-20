@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
-from app.core.database import Base
+from app.db.base import Base
 
 class Like(Base):
     __tablename__ = "likes"
