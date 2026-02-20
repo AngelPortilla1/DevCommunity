@@ -4,8 +4,7 @@ from app.api import routes_test
 from app.auth import auth_routes
 from app.core.database import Base, engine
 from app.models import user, post, coments, like, follows
-from app.routes import post_routes
-from app.routes import comments_routes 
+from app.routers import post_router, comment_router, like_router, follower_router
 from app.exceptions.base import AppException
 from app.core.exceptions_handlers import app_exception_handler
 from fastapi.responses import JSONResponse
@@ -44,8 +43,10 @@ app.add_exception_handler(AppException, app_exception_handler)
 # Rutas
 app.include_router(routes_test.router)
 app.include_router(auth_routes.router)
-app.include_router(post_routes.router)
-app.include_router(comments_routes.router)
+app.include_router(post_router.router)
+app.include_router(comment_router.router)
+app.include_router(like_router.router)
+app.include_router(follower_router.router)
 
 @app.get("/")
 def root():
