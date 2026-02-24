@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.comment import Comment
+from app.models.post import Post
 
 class CommentRepository:
     def __init__(self, db: Session):
@@ -18,6 +19,11 @@ class CommentRepository:
             post_id=post_id
         )
         self.db.add(new_comment)
+        
+        po = self.db.query(Post).filter(Post.id == post_id).with_for_update().first()
+        if po:
+            po.comments_count += 1
+            
         self.db.commit()
         self.db.refresh(new_comment)
         return new_comment
@@ -29,5 +35,11 @@ class CommentRepository:
         return comment
 
     def delete(self, comment: Comment):
+        post_id = comment.post_id
         self.db.delete(comment)
+        
+        po = self.db.query(Post).filter(Post.id == post_id).with_for_update().first()
+        if po and po.comments_count > 0:
+            po.comments_count -= 1
+            
         self.db.commit()

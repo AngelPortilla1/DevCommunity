@@ -62,15 +62,6 @@ class PostRepository:
         posts = query.order_by(Post.created_at.desc()).offset(skip).limit(limit).all()
         return total, posts
 
-    def get_likes_count_for_posts(self, post_ids: list[int]):
-        likes_counts = (
-            self.db.query(Like.post_id, func.count(Like.id).label("count"))
-            .filter(Like.post_id.in_(post_ids))
-            .group_by(Like.post_id)
-            .all()
-        )
-        return {post_id: count for post_id, count in likes_counts}
-
     def get_user_liked_posts(self, post_ids: list[int], user_id: int):
         user_likes = (
             self.db.query(Like.post_id)

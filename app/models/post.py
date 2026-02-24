@@ -18,6 +18,10 @@ class Post(Base):
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
+    
+    likes_count = Column(Integer, default=0, nullable=False)
+    comments_count = Column(Integer, default=0, nullable=False)
+
 
     # ÚNICA relación con User
     author_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)

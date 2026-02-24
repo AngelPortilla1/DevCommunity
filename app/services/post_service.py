@@ -19,7 +19,7 @@ class PostService:
             content=post_data.content,
             author_id=current_user.id
         )
-        return map_post_to_response(new_post, likes_count=0, liked_by_me=False)
+        return map_post_to_response(new_post, liked_by_me=False)
 
     def get_posts(
         self,
@@ -46,13 +46,11 @@ class PostService:
         )
 
         post_ids = [post.id for post in posts]
-        likes_count_map = self.repository.get_likes_count_for_posts(post_ids)
         liked_post_ids = self.repository.get_user_liked_posts(post_ids, current_user.id)
 
         posts_data = [
             map_post_to_response(
                 post,
-                likes_count=likes_count_map.get(post.id, 0),
                 liked_by_me=post.id in liked_post_ids,
             )
             for post in posts
@@ -68,10 +66,9 @@ class PostService:
         if post.author_id != current_user.id and current_user.role != "admin":
             raise ForbiddenAction()
 
-        likes_count = self.like_repository.count_likes_for_post(post.id)
         liked_by_me = self.like_repository.is_post_liked_by_user(post.id, current_user.id)
 
-        return map_post_to_response(post, likes_count, liked_by_me)
+        return map_post_to_response(post, liked_by_me)
 
     def update_post(self, post_id: int, post_data: PostCreate, current_user: User):
         post = self.repository.get_by_id(post_id, include_relations=True)
@@ -83,10 +80,9 @@ class PostService:
 
         updated_post = self.repository.update(post, post_data.title, post_data.content)
         
-        likes_count = len(updated_post.likes)
         liked_by_me = any(like.user_id == current_user.id for like in updated_post.likes)
 
-        return map_post_to_response(updated_post, likes_count=likes_count, liked_by_me=liked_by_me)
+        return map_post_to_response(updated_post, liked_by_me=liked_by_me)
 
     def delete_post(self, post_id: int, current_user: User):
         post = self.repository.get_by_id(post_id, include_relations=False)

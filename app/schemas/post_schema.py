@@ -12,6 +12,7 @@ class PostResponse(BaseModel):
     title: str
     content: str
     likes_count: int
+    comments_count: int
     liked_by_me: bool
     created_at: datetime | None = None
     updated_at: datetime | None = None
