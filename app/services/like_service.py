@@ -18,7 +18,14 @@ class LikeService:
             raise HTTPException(status_code=400, detail="You already liked this post")
             
         self.repository.create(post_id, user_id)
-        self.db.refresh(post)
+        
+        po = self.db.query(Post).filter(Post.id == post_id).with_for_update().first()
+        if po:
+            po.likes_count += 1
+            self.db.commit()
+            self.db.refresh(po)
+            post = po
+            
         return {"liked": True, "likes_count": post.likes_count}
 
     def unlike_post(self, post_id: int, user_id: int):
@@ -28,5 +35,13 @@ class LikeService:
             
         self.repository.delete(like)
         
-        post = self.db.query(Post).filter(Post.id == post_id).first()
+        po = self.db.query(Post).filter(Post.id == post_id).with_for_update().first()
+        if po and po.likes_count > 0:
+            po.likes_count -= 1
+            self.db.commit()
+            self.db.refresh(po)
+            post = po
+        else:
+            post = po if po else None
+            
         return {"liked": False, "likes_count": post.likes_count if post else 0}

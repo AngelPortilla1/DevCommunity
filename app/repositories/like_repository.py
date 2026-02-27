@@ -28,22 +28,11 @@ class LikeRepository:
     def create(self, post_id: int, user_id: int):
         like = Like(user_id=user_id, post_id=post_id)
         self.db.add(like)
-        
-        po = self.db.query(Post).filter(Post.id == post_id).with_for_update().first()
-        if po:
-            po.likes_count += 1
-            
         self.db.commit()
         return like
 
     def delete(self, like: Like):
-        post_id = like.post_id
         self.db.delete(like)
-        
-        po = self.db.query(Post).filter(Post.id == post_id).with_for_update().first()
-        if po and po.likes_count > 0:
-            po.likes_count -= 1
-            
         self.db.commit()
 
 # Compatibilidad con código actual hasta que refactoricemos el router usando el Injection Dependency

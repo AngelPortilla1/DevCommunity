@@ -17,11 +17,18 @@ class CommentService:
         if not post:
             raise PostNotFound()
         
-        return self.repository.create(
+        new_comment = self.repository.create(
             content=comment_data.content,
             author_id=current_user.id,
             post_id=post_id
         )
+        
+        po = self.db.query(Post).filter(Post.id == post_id).with_for_update().first()
+        if po:
+            po.comments_count += 1
+            self.db.commit()
+            
+        return new_comment
 
     def get_comments_by_post(self, post_id: int):
         post = self.db.query(Post).filter(Post.id == post_id).first()
@@ -47,4 +54,10 @@ class CommentService:
         if comment.author_id != current_user.id and current_user.role != 'admin':
             raise ForbiddenCommentAction()
             
+        post_id = comment.post_id
         self.repository.delete(comment)
+        
+        po = self.db.query(Post).filter(Post.id == post_id).with_for_update().first()
+        if po and po.comments_count > 0:
+            po.comments_count -= 1
+            self.db.commit()
