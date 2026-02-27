@@ -94,3 +94,38 @@ class PostService:
 
         self.repository.delete(post)
         return {"message": "Post eliminado"}
+
+
+
+
+def get_feed(self, current_user_id: int, page: int, size: int):
+
+    followed_ids = self.follower_repository.get_followed_ids(current_user_id)
+
+    if not followed_ids:
+        return empty_paginated_response
+
+    posts, total = self.post_repository.get_feed_posts(
+        followed_ids, page, size
+    )
+
+    post_ids = [p.id for p in posts]
+
+    liked_ids = self.like_repository.get_liked_post_ids(
+        current_user_id, post_ids
+    )
+
+    # Mapear DTO
+    response_items = [
+        PostResponse(
+            id=p.id,
+            title=p.title,
+            content=p.content,
+            likes_count=p.likes_count,
+            comments_count=p.comments_count,
+            liked_by_me=p.id in liked_ids
+        )
+        for p in posts
+    ]
+
+    return paginated_response

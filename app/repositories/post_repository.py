@@ -83,3 +83,18 @@ class PostRepository:
     def delete(self, post: Post):
         self.db.delete(post)
         self.db.commit()
+
+
+    def get_feed_posts(self, followed_ids: list[int], page: int, size: int):
+        query = self.db.query(Post).filter(
+            Post.user_id.in_(followed_ids)
+        ).order_by(Post.created_at.desc())
+
+        total = query.count()
+
+        posts = query.offset((page - 1) * size).limit(size).all()
+
+        return posts, total
+
+
+

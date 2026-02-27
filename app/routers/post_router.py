@@ -81,3 +81,11 @@ def fix_user_roles(current_user: User = Depends(admin_only), db: Session = Depen
         "message": "Roles corregidos",
         "users": [{"id": u.id, "email": u.email, "role": u.role} for u in all_users]
     }
+
+@router.get("/feed")
+def get_feed(
+    page: int = 1,
+    size: int = 10,
+    current_user: User = Depends(get_current_user)
+):
+    return post_service.get_feed(current_user.id, page, size)
