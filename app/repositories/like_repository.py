@@ -42,13 +42,13 @@ def is_post_liked_by_user(db: Session, post_id: int, user_id: int) -> bool:
     return LikeRepository(db).is_post_liked_by_user(post_id, user_id)
 
 
-def get_liked_post_ids(self, user_id: int, post_ids: list[int]):
-    results = (
-        self.db.query(Like.post_id)
-        .filter(
-            Like.user_id == user_id,
-            Like.post_id.in_(post_ids)
+    def get_liked_post_ids(self, user_id: int, post_ids: list[int]):
+        results = (
+            self.db.query(Like.post_id)
+            .filter(
+                Like.user_id == user_id,
+                Like.post_id.in_(post_ids)
+            )
+            .all()
         )
-        .all()
-    )
-    return {r[0] for r in results}
+        return {r[0] for r in results}

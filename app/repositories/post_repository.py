@@ -86,15 +86,14 @@ class PostRepository:
 
 
     def get_feed_posts(self, followed_ids: list[int], page: int, size: int):
-        query = self.db.query(Post).filter(
-            Post.user_id.in_(followed_ids)
+        query = self.db.query(Post).options(selectinload(Post.author)).filter(
+            Post.author_id.in_(followed_ids)
         ).order_by(Post.created_at.desc())
 
         total = query.count()
 
         posts = query.offset((page - 1) * size).limit(size).all()
 
-        return posts, total
-
+        return total, posts
 
 

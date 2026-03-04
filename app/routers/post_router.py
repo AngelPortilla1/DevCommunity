@@ -43,6 +43,15 @@ def get_posts(
         current_user=current_user
     )
 
+@router.get("/feed")
+def get_feed(
+    page: int = Query(1, ge=1),
+    size: int = Query(10, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
+    service: PostService = Depends(get_post_service)
+):
+    return service.get_feed(current_user.id, page, size)
+
 # Obtener post por id
 @router.get("/{post_id}", response_model=PostResponse)
 def get_post(
@@ -81,11 +90,3 @@ def fix_user_roles(current_user: User = Depends(admin_only), db: Session = Depen
         "message": "Roles corregidos",
         "users": [{"id": u.id, "email": u.email, "role": u.role} for u in all_users]
     }
-
-@router.get("/feed")
-def get_feed(
-    page: int = 1,
-    size: int = 10,
-    current_user: User = Depends(get_current_user)
-):
-    return post_service.get_feed(current_user.id, page, size)

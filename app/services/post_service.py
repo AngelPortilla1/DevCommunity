@@ -5,13 +5,16 @@ from app.models.user import User
 from app.schemas import PostCreate
 from app.exceptions.post_exceptions import PostNotFound, ForbiddenAction
 from app.mappers.post_mapper import map_post_to_response
+from app.repositories.follower_repository import FollowerRepository
 from datetime import date
+import math
 
 class PostService:
     def __init__(self, db: Session):
         self.db = db
         self.repository = PostRepository(db)
         self.like_repository = LikeRepository(db)
+        self.follower_repository = FollowerRepository(db)
 
     def create_post(self, post_data: PostCreate, current_user: User):
         new_post = self.repository.create(
@@ -98,34 +101,42 @@ class PostService:
 
 
 
-def get_feed(self, current_user_id: int, page: int, size: int):
+    def get_feed(self, current_user_id: int, page: int, size: int):
+        followed_ids = self.follower_repository.get_followed_ids(current_user_id)
 
-    followed_ids = self.follower_repository.get_followed_ids(current_user_id)
+        if not followed_ids:
+            return {
+                "items": [],
+                "total": 0,
+                "page": page,
+                "size": size,
+                "pages": 0
+            }
 
-    if not followed_ids:
-        return empty_paginated_response
-
-    posts, total = self.post_repository.get_feed_posts(
-        followed_ids, page, size
-    )
-
-    post_ids = [p.id for p in posts]
-
-    liked_ids = self.like_repository.get_liked_post_ids(
-        current_user_id, post_ids
-    )
-
-    # Mapear DTO
-    response_items = [
-        PostResponse(
-            id=p.id,
-            title=p.title,
-            content=p.content,
-            likes_count=p.likes_count,
-            comments_count=p.comments_count,
-            liked_by_me=p.id in liked_ids
+        total, posts = self.repository.get_feed_posts(
+            followed_ids=followed_ids, page=page, size=size
         )
-        for p in posts
-    ]
 
-    return paginated_response
+        post_ids = [p.id for p in posts]
+
+        liked_ids = self.like_repository.get_liked_post_ids(
+            user_id=current_user_id, post_ids=post_ids
+        )
+
+        items = [
+            map_post_to_response(
+                post,
+                liked_by_me=post.id in liked_ids,
+            )
+            for post in posts
+        ]
+
+        pages = math.ceil(total / size) if size > 0 else 0
+
+        return {
+            "items": items,
+            "total": total,
+            "page": page,
+            "size": size,
+            "pages": pages
+        }

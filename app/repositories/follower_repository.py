@@ -29,8 +29,8 @@ class FollowerRepository:
 
     def get_followed_ids(self, user_id: int) -> list[int]:
         results = (
-            self.db.query(UserFollower.followed_id)
-            .filter(UserFollower.follower_id == user_id)
+            self.db.query(Follow.followed_id)
+            .filter(Follow.follower_id == user_id)
             .all()
         )
         return [r[0] for r in results]
