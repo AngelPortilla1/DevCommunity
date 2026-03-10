@@ -28,10 +28,10 @@ class PostRepository:
             )
         return query.filter(Post.id == post_id).first()
 
-    def get_posts(
+    def get_paginated_posts(
         self,
-        skip: int,
-        limit: int,
+        page: int,
+        size: int,
         search: str | None = None,
         author_id: int | None = None,
         from_date: date | None = None,
@@ -69,7 +69,7 @@ class PostRepository:
         else:  # "recent" por defecto
             query = query.order_by(Post.created_at.desc())
         
-        posts = query.offset(skip).limit(limit).all()
+        posts = query.offset((page - 1) * size).limit(size).all()
         return total, posts
 
     def get_user_liked_posts(self, post_ids: list[int], user_id: int):

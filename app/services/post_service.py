@@ -39,10 +39,9 @@ class PostService:
         if current_user.role != "admin":
             filter_author_id = current_user.id
             
-        skip = (page - 1) * limit
-        total, posts = self.repository.get_posts(
-            skip=skip,
-            limit=limit,
+        total, posts = self.repository.get_paginated_posts(
+            page=page,
+            size=limit,
             search=search,
             author_id=filter_author_id,
             from_date=from_date,
@@ -68,7 +67,7 @@ class PostService:
             "size": limit,
             "total": total,
             "total_pages": total_pages,
-            "data": posts_data
+            "items": posts_data
         }
 
     def get_post(self, post_id: int, current_user: User):
