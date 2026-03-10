@@ -32,7 +32,8 @@ class PostService:
         author_id: int | None,
         from_date: date | None,
         to_date: date | None,
-        current_user: User
+        current_user: User,
+        order: str = "recent"
     ):
         filter_author_id = author_id
         if current_user.role != "admin":
@@ -45,7 +46,8 @@ class PostService:
             search=search,
             author_id=filter_author_id,
             from_date=from_date,
-            to_date=to_date
+            to_date=to_date,
+            order=order
         )
 
         post_ids = [post.id for post in posts]
@@ -59,7 +61,15 @@ class PostService:
             for post in posts
         ]
         
-        return {"page": page, "limit": limit, "total": total, "data": posts_data}
+        total_pages = (total + limit - 1) // limit  # Redondea hacia arriba
+        
+        return {
+            "page": page,
+            "size": limit,
+            "total": total,
+            "total_pages": total_pages,
+            "data": posts_data
+        }
 
     def get_post(self, post_id: int, current_user: User):
         post = self.repository.get_by_id(post_id, include_relations=True)
@@ -101,7 +111,7 @@ class PostService:
 
 
 
-    def get_feed(self, current_user_id: int, page: int, size: int):
+    def get_feed(self, current_user_id: int, page: int, size: int, order: str = "recent"):
         followed_ids = self.follower_repository.get_followed_ids(current_user_id)
 
         if not followed_ids:
@@ -110,11 +120,11 @@ class PostService:
                 "total": 0,
                 "page": page,
                 "size": size,
-                "pages": 0
+                "total_pages": 0
             }
 
         total, posts = self.repository.get_feed_posts(
-            followed_ids=followed_ids, page=page, size=size
+            followed_ids=followed_ids, page=page, size=size, order=order
         )
 
         post_ids = [p.id for p in posts]
@@ -131,12 +141,12 @@ class PostService:
             for post in posts
         ]
 
-        pages = math.ceil(total / size) if size > 0 else 0
+        total_pages = (total + size - 1) // size if size > 0 else 0
 
         return {
             "items": items,
             "total": total,
             "page": page,
             "size": size,
-            "pages": pages
+            "total_pages": total_pages
         }

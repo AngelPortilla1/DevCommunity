@@ -25,7 +25,8 @@ def create_post(
 @router.get("/", response_model=PaginatedPosts)
 def get_posts(
     page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1, le=100),
+    size: int = Query(10, ge=1, le=50),
+    order: str = Query("recent", regex="^(recent|most_liked|most_commented)$"),
     search: str | None = Query(None),
     author_id: int | None = Query(None),
     from_date: date | None = Query(None),
@@ -35,22 +36,24 @@ def get_posts(
 ):
     return service.get_posts(
         page=page,
-        limit=limit,
+        limit=size,
         search=search,
         author_id=author_id,
         from_date=from_date,
         to_date=to_date,
-        current_user=current_user
+        current_user=current_user,
+        order=order
     )
 
 @router.get("/feed")
 def get_feed(
     page: int = Query(1, ge=1),
-    size: int = Query(10, ge=1, le=100),
+    size: int = Query(10, ge=1, le=50),
+    order: str = Query("recent", regex="^(recent|most_liked|most_commented)$"),
     current_user: User = Depends(get_current_user),
     service: PostService = Depends(get_post_service)
 ):
-    return service.get_feed(current_user.id, page, size)
+    return service.get_feed(current_user.id, page, size, order)
 
 # Obtener post por id
 @router.get("/{post_id}", response_model=PostResponse)

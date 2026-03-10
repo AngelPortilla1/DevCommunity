@@ -35,7 +35,8 @@ class PostRepository:
         search: str | None = None,
         author_id: int | None = None,
         from_date: date | None = None,
-        to_date: date | None = None
+        to_date: date | None = None,
+        order: str = "recent"
     ):
         query = self.db.query(Post).options(selectinload(Post.author))
 
@@ -59,7 +60,16 @@ class PostRepository:
             query = query.filter(Post.created_at <= end_datetime)
 
         total = query.count()
-        posts = query.order_by(Post.created_at.desc()).offset(skip).limit(limit).all()
+        
+        # Aplicar ordenamiento
+        if order == "most_liked":
+            query = query.order_by(Post.likes_count.desc(), Post.created_at.desc())
+        elif order == "most_commented":
+            query = query.order_by(Post.comments_count.desc(), Post.created_at.desc())
+        else:  # "recent" por defecto
+            query = query.order_by(Post.created_at.desc())
+        
+        posts = query.offset(skip).limit(limit).all()
         return total, posts
 
     def get_user_liked_posts(self, post_ids: list[int], user_id: int):
@@ -85,10 +95,18 @@ class PostRepository:
         self.db.commit()
 
 
-    def get_feed_posts(self, followed_ids: list[int], page: int, size: int):
+    def get_feed_posts(self, followed_ids: list[int], page: int, size: int, order: str = "recent"):
         query = self.db.query(Post).options(selectinload(Post.author)).filter(
             Post.author_id.in_(followed_ids)
-        ).order_by(Post.created_at.desc())
+        )
+        
+        # Aplicar ordenamiento
+        if order == "most_liked":
+            query = query.order_by(Post.likes_count.desc(), Post.created_at.desc())
+        elif order == "most_commented":
+            query = query.order_by(Post.comments_count.desc(), Post.created_at.desc())
+        else:  # "recent" por defecto
+            query = query.order_by(Post.created_at.desc())
 
         total = query.count()
 

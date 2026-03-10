@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 
 # Archivos de entorno y secretos
+.md
 .env
 .env.*
 !.env.example

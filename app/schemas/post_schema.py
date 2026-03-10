@@ -23,8 +23,9 @@ class PostResponse(BaseModel):
 
 class PaginatedPosts(BaseModel):
     page: int
-    limit: int
+    size: int
     total: int
+    total_pages: int
     data: list[PostResponse]
 
     model_config = ConfigDict(from_attributes=True)
