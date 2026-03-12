@@ -48,3 +48,4 @@ experimentos/
 *.swp
 *~
 .DS_Store
+seed_devcommunity.py
