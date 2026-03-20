@@ -4,13 +4,17 @@ import bcrypt
 import hashlib
 from app.db.session import get_db
 from app.models.user import User
-from app.auth.auth_handler import create_access_token
-from app.schemas import UserCreate, UserLogin
+from app.auth.auth_handler import (
+    create_access_token, 
+    decode_access_token, 
+    create_refresh_token, 
+    decode_refresh_token, 
+    revoke_refresh_token
+)
+from app.schemas import UserCreate, UserLogin, RefreshTokenRequest
 from app.auth.auth_bearer import JWTBearer
-from app.auth.auth_handler import decode_access_token
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException
-from app.auth.auth_handler import decode_access_token
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -77,11 +81,50 @@ def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
     if not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
-    token = create_access_token({"sub": user.email,"user_id": user.id})
+    access_token = create_access_token({"sub": user.email,"user_id": user.id})
+    refresh_token = create_refresh_token({"sub": user.email,"user_id": user.id})
     return {
-        "access_token": token,
+        "access_token": access_token,
+        "refresh_token": refresh_token,
         "token_type": "bearer"
     }
+
+@router.post("/refresh")
+def refresh_token(request: RefreshTokenRequest, db: Session = Depends(get_db)):
+    """
+    Endpoint para renovar el access_token y rotar el refresh_token.
+    """
+    payload = decode_refresh_token(request.refresh_token)
+    
+    user_id = payload.get("user_id")
+    email = payload.get("sub")
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="Usuario no encontrado")
+        
+    jti = payload.get("jti")
+    # Revocar el refresh token actual por seguridad
+    revoke_refresh_token(jti)
+    
+    new_access_token = create_access_token({"sub": email, "user_id": user_id})
+    new_refresh_token = create_refresh_token({"sub": email, "user_id": user_id})
+    
+    return {
+        "access_token": new_access_token,
+        "refresh_token": new_refresh_token,
+        "token_type": "bearer"
+    }
+
+@router.post("/logout")
+def logout(request: RefreshTokenRequest):
+    """
+    Cierra la sesión revocando el refresh token en Redis.
+    """
+    payload = decode_refresh_token(request.refresh_token)
+    jti = payload.get("jti")
+    revoke_refresh_token(jti)
+    return {"message": "Cierre de sesión exitoso"}
     
     
 @router.get("/me")

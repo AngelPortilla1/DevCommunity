@@ -10,5 +10,7 @@ class Settings:
     # Clave secreta para firmar JWT — cámbiala en producción
     SECRET_KEY: str = os.getenv("SECRET_KEY", "mi_super_clave_ultra_secreta")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
+    REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
 settings = Settings()
