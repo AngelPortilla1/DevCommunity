@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 import bcrypt
 import hashlib
@@ -9,9 +9,19 @@ from app.auth.auth_handler import (
     decode_access_token, 
     create_refresh_token, 
     decode_refresh_token, 
-    revoke_refresh_token
+    revoke_refresh_token,
+    SECRET_KEY,
+    ALGORITHM,
+    REFRESH_TOKEN_EXPIRE_DAYS
 )
 from app.schemas import UserCreate, UserLogin, RefreshTokenRequest
+from datetime import datetime, timedelta
+from jose import jwt
+from app.core.redis import redis_client
+from app.services.session_service import SessionService
+from app.utils.device import extract_ip, extract_user_agent, generate_device_id
+
+session_service = SessionService(redis_client)
 from app.auth.auth_bearer import JWTBearer
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException
@@ -72,7 +82,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     }
 
 @router.post("/login")
-def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
+def login_user(credentials: UserLogin, request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == credentials.email).first()
     if not user:
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
@@ -83,6 +93,25 @@ def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
 
     access_token = create_access_token({"sub": user.email,"user_id": user.id})
     refresh_token = create_refresh_token({"sub": user.email,"user_id": user.id})
+
+    # Integramos session service
+    payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+    jti = payload.get("jti")
+    
+    ip = extract_ip(request)
+    ua = extract_user_agent(request)
+    device_id = generate_device_id(ua, ip)
+    expires_at = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    
+    session_service.create_session(
+        user_id=user.id,
+        device_id=device_id,
+        jti=jti,
+        ip=ip,
+        user_agent=ua,
+        expires_at=expires_at
+    )
+
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
@@ -90,11 +119,11 @@ def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
     }
 
 @router.post("/refresh")
-def refresh_token(request: RefreshTokenRequest, db: Session = Depends(get_db)):
+def refresh_token(request_data: RefreshTokenRequest, request: Request, db: Session = Depends(get_db)):
     """
     Endpoint para renovar el access_token y rotar el refresh_token.
     """
-    payload = decode_refresh_token(request.refresh_token)
+    payload = decode_refresh_token(request_data.refresh_token)
     
     user_id = payload.get("user_id")
     email = payload.get("sub")
@@ -110,6 +139,22 @@ def refresh_token(request: RefreshTokenRequest, db: Session = Depends(get_db)):
     new_access_token = create_access_token({"sub": email, "user_id": user_id})
     new_refresh_token = create_refresh_token({"sub": email, "user_id": user_id})
     
+    new_payload = jwt.decode(new_refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+    new_jti = new_payload.get("jti")
+    
+    ip = extract_ip(request)
+    ua = extract_user_agent(request)
+    device_id = generate_device_id(ua, ip)
+    new_expires_at = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    
+    session_service.update_jti_for_session(
+        user_id=user_id,
+        device_id=device_id,
+        old_jti=jti,
+        new_jti=new_jti,
+        new_expires_at=new_expires_at
+    )
+    
     return {
         "access_token": new_access_token,
         "refresh_token": new_refresh_token,
@@ -117,13 +162,20 @@ def refresh_token(request: RefreshTokenRequest, db: Session = Depends(get_db)):
     }
 
 @router.post("/logout")
-def logout(request: RefreshTokenRequest):
+def logout(request_data: RefreshTokenRequest, request: Request):
     """
     Cierra la sesión revocando el refresh token en Redis.
     """
-    payload = decode_refresh_token(request.refresh_token)
+    payload = decode_refresh_token(request_data.refresh_token)
     jti = payload.get("jti")
+    user_id = payload.get("user_id")
+    
+    ip = extract_ip(request)
+    ua = extract_user_agent(request)
+    device_id = generate_device_id(ua, ip)
+
     revoke_refresh_token(jti)
+    session_service.delete_session(user_id, device_id)
     return {"message": "Cierre de sesión exitoso"}
     
     
@@ -149,3 +201,35 @@ def get_me(
         "email": user.email,
         "username": user.username
     }
+
+
+# --- SESSION ENDPOINTS ---
+
+@router.get("/sessions")
+def get_sessions(token: str = Depends(oauth2_scheme)):
+    payload = decode_access_token(token)
+    user_id = payload.get("user_id")
+    sessions = session_service.get_sessions(user_id)
+    return {"sessions": sessions}
+
+@router.delete("/sessions/all")
+def delete_all_other_sessions(request: Request, token: str = Depends(oauth2_scheme)):
+    payload = decode_access_token(token)
+    user_id = payload.get("user_id")
+    
+    ip = extract_ip(request)
+    ua = extract_user_agent(request)
+    device_id = generate_device_id(ua, ip)
+    
+    deleted = session_service.delete_all_except(user_id, keep_device_id=device_id)
+    return {"message": "Sesiones cerradas", "deleted_devices": deleted}
+
+@router.delete("/sessions/{device_id}")
+def delete_session_by_device(device_id: str, token: str = Depends(oauth2_scheme)):
+    payload = decode_access_token(token)
+    user_id = payload.get("user_id")
+    
+    success = session_service.delete_session(user_id, device_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+    return {"message": "Sesión cerrada exitosamente"}

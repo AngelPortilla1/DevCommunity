@@ -20,7 +20,7 @@ class SessionService:
     # -----------------------------
     # 1. Crear Sesión
     # -----------------------------
-    async def create_session(
+    def create_session(
         self,
         user_id: int,
         device_id: str,
@@ -43,14 +43,14 @@ class SessionService:
         }
 
         # Guardamos sesión como JSON
-        await self.redis.set(
+        self.redis.set(
             key,
             json.dumps(session_data),
             ex=int((expires_at - datetime.utcnow()).total_seconds())
         )
 
         # También guardamos jti -> device_id
-        await self.redis.set(
+        self.redis.set(
             self._jti_key(jti),
             device_id,
             ex=int((expires_at - datetime.utcnow()).total_seconds())
@@ -61,14 +61,14 @@ class SessionService:
     # -----------------------------
     # 2. Obtener todas las sesiones de un usuario
     # -----------------------------
-    async def get_sessions(self, user_id: int):
+    def get_sessions(self, user_id: int):
         pattern = f"session:{user_id}:*"
-        keys = await self.redis.keys(pattern)
+        keys = self.redis.keys(pattern)
 
         sessions = []
 
         for key in keys:
-            raw = await self.redis.get(key)
+            raw = self.redis.get(key)
             if raw:
                 sessions.append(json.loads(raw))
 
@@ -77,10 +77,10 @@ class SessionService:
     # -----------------------------
     # 3. Eliminar una sesión
     # -----------------------------
-    async def delete_session(self, user_id: int, device_id: str):
+    def delete_session(self, user_id: int, device_id: str):
         key = self._session_key(user_id, device_id)
 
-        raw = await self.redis.get(key)
+        raw = self.redis.get(key)
         if not raw:
             return False
 
@@ -88,33 +88,36 @@ class SessionService:
         jti = session.get("jti")
 
         # Borrar sesión y refresh token asociado
-        await self.redis.delete(key)
+        self.redis.delete(key)
         if jti:
-            await self.redis.delete(self._jti_key(jti))
+            self.redis.delete(self._jti_key(jti))
 
         return True
 
     # -----------------------------
     # 4. Eliminar todas las sesiones excepto la actual
     # -----------------------------
-    async def delete_all_except(self, user_id: int, keep_device_id: str):
+    def delete_all_except(self, user_id: int, keep_device_id: str):
         pattern = f"session:{user_id}:*"
-        keys = await self.redis.keys(pattern)
+        keys = self.redis.keys(pattern)
 
         deleted = []
 
         for key in keys:
-            if key.decode().endswith(keep_device_id):
+            # En redis sincronizado, si no usa decode_responses, las llaves podrian ser bytes
+            k_str = key if isinstance(key, str) else key.decode()
+            
+            if k_str.endswith(f":{keep_device_id}"):
                 continue
 
-            raw = await self.redis.get(key)
+            raw = self.redis.get(key)
             if raw:
                 session = json.loads(raw)
                 jti = session.get("jti")
 
-                await self.redis.delete(key)
+                self.redis.delete(key)
                 if jti:
-                    await self.redis.delete(self._jti_key(jti))
+                    self.redis.delete(self._jti_key(jti))
 
                 deleted.append(session["device_id"])
 
@@ -123,7 +126,7 @@ class SessionService:
     # -----------------------------
     # 5. Actualizar JTI (token rotation)
     # -----------------------------
-    async def update_jti_for_session(
+    def update_jti_for_session(
         self,
         user_id: int,
         device_id: str,
@@ -133,7 +136,7 @@ class SessionService:
     ):
         key = self._session_key(user_id, device_id)
 
-        raw = await self.redis.get(key)
+        raw = self.redis.get(key)
         if not raw:
             return False
 
@@ -142,17 +145,17 @@ class SessionService:
         session["expires_at"] = new_expires_at.isoformat()
 
         # Guardamos nuevamente con TTL actualizado
-        await self.redis.set(
+        self.redis.set(
             key,
             json.dumps(session),
             ex=int((new_expires_at - datetime.utcnow()).total_seconds())
         )
 
         # Borrar JTI viejo
-        await self.redis.delete(self._jti_key(old_jti))
+        self.redis.delete(self._jti_key(old_jti))
 
         # Guardar JTI nuevo
-        await self.redis.set(
+        self.redis.set(
             self._jti_key(new_jti),
             device_id,
             ex=int((new_expires_at - datetime.utcnow()).total_seconds())
