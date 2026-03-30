@@ -51,7 +51,16 @@ def verify_token(token: str) -> dict | None:
 
 
 def decode_access_token(token: str) -> dict:
-    """Decodifica un JWT. Lanza HTTP 401 si el token es inválido o expirado."""
+    """Decodifica un JWT. Lanza HTTP 401 si el token es inválido o expirado o revocado."""
+    
+    # 3.3 Verificación en Blacklist (Opcional - Enterprise)
+    if redis_client.exists(f"blacklist:{token}"):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Access token revocado o sesión cerrada",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         if payload.get("type") == "refresh":

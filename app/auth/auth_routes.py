@@ -100,7 +100,7 @@ def login_user(credentials: UserLogin, request: Request, db: Session = Depends(g
     
     ip = extract_ip(request)
     ua = extract_user_agent(request)
-    device_id = generate_device_id(ua, ip)
+    device_id = generate_device_id(request)
     expires_at = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     
     session_service.create_session(
@@ -144,16 +144,21 @@ def refresh_token(request_data: RefreshTokenRequest, request: Request, db: Sessi
     
     ip = extract_ip(request)
     ua = extract_user_agent(request)
-    device_id = generate_device_id(ua, ip)
+    device_id = generate_device_id(request)
     new_expires_at = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     
-    session_service.update_jti_for_session(
+    updated = session_service.update_jti_for_session(
         user_id=user_id,
         device_id=device_id,
         old_jti=jti,
         new_jti=new_jti,
-        new_expires_at=new_expires_at
+        new_expires_at=new_expires_at,
+        current_ip=ip,
+        current_user_agent=ua
     )
+    if not updated:
+        revoke_refresh_token(new_jti)
+        raise HTTPException(status_code=401, detail="Sesión inválida, expirada o robada.")
     
     return {
         "access_token": new_access_token,
@@ -162,20 +167,25 @@ def refresh_token(request_data: RefreshTokenRequest, request: Request, db: Sessi
     }
 
 @router.post("/logout")
-def logout(request_data: RefreshTokenRequest, request: Request):
+def logout(request_data: RefreshTokenRequest, request: Request, __token: str = Depends(oauth2_scheme)):
     """
     Cierra la sesión revocando el refresh token en Redis.
+    Y añade el access_token al blacklist.
     """
     payload = decode_refresh_token(request_data.refresh_token)
     jti = payload.get("jti")
     user_id = payload.get("user_id")
     
     ip = extract_ip(request)
-    ua = extract_user_agent(request)
-    device_id = generate_device_id(ua, ip)
+    device_id = generate_device_id(request)
 
     revoke_refresh_token(jti)
     session_service.delete_session(user_id, device_id)
+    
+    # 3.3 Blacklist de access_token (opcional enterprise level)
+    # TTL aproximado para no acumular basura (los access tokens viven menos p.ej. 30min o 1 d).
+    redis_client.setex(f"blacklist:{__token}", timedelta(minutes=60), "revoked")
+    
     return {"message": "Cierre de sesión exitoso"}
     
     
@@ -218,8 +228,7 @@ def delete_all_other_sessions(request: Request, token: str = Depends(oauth2_sche
     user_id = payload.get("user_id")
     
     ip = extract_ip(request)
-    ua = extract_user_agent(request)
-    device_id = generate_device_id(ua, ip)
+    device_id = generate_device_id(request)
     
     deleted = session_service.delete_all_except(user_id, keep_device_id=device_id)
     return {"message": "Sesiones cerradas", "deleted_devices": deleted}
