@@ -15,6 +15,7 @@ from app.auth.auth_handler import (
     REFRESH_TOKEN_EXPIRE_DAYS
 )
 from app.schemas import UserCreate, UserLogin, RefreshTokenRequest
+from app.schemas.session import SessionOut
 from datetime import datetime, timedelta
 from jose import jwt
 from app.core.redis import redis_client
@@ -216,13 +217,32 @@ def get_me(
 # --- SESSION ENDPOINTS ---
 
 @router.get("/sessions")
-def get_sessions(token: str = Depends(oauth2_scheme)):
+def get_sessions(request: Request, token: str = Depends(oauth2_scheme)):
     payload = decode_access_token(token)
     user_id = payload.get("user_id")
+    current_device_id = generate_device_id(request)
+    
     sessions = session_service.get_sessions(user_id)
-    return {"sessions": sessions}
+    session_outs = [SessionOut.from_redis_hash(s, current_device_id) for s in sessions]
+    return {"sessions": session_outs}
 
-@router.delete("/sessions/all")
+@router.get("/sessions/me", response_model=SessionOut)
+def get_current_session(request: Request, token: str = Depends(oauth2_scheme)):
+    payload = decode_access_token(token)
+    user_id = payload.get("user_id")
+    device_id = generate_device_id(request)
+    
+    key = session_service._session_key(user_id, device_id)
+    raw = session_service.redis.get(key)
+    
+    if not raw:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada o ha expirado")
+        
+    import json
+    session_data = json.loads(raw)
+    return SessionOut.from_redis_hash(session_data, current_device_id=device_id)
+
+@router.delete("/sessions/terminate-others")
 def delete_all_other_sessions(request: Request, token: str = Depends(oauth2_scheme)):
     payload = decode_access_token(token)
     user_id = payload.get("user_id")
@@ -231,7 +251,7 @@ def delete_all_other_sessions(request: Request, token: str = Depends(oauth2_sche
     device_id = generate_device_id(request)
     
     deleted = session_service.delete_all_except(user_id, keep_device_id=device_id)
-    return {"message": "Sesiones cerradas", "deleted_devices": deleted}
+    return {"message": "Sesiones de otros dispositivos cerradas", "deleted_devices": deleted}
 
 @router.delete("/sessions/{device_id}")
 def delete_session_by_device(device_id: str, token: str = Depends(oauth2_scheme)):
@@ -242,3 +262,13 @@ def delete_session_by_device(device_id: str, token: str = Depends(oauth2_scheme)
     if not success:
         raise HTTPException(status_code=404, detail="Sesión no encontrada")
     return {"message": "Sesión cerrada exitosamente"}
+
+@router.get("/sessions/metrics")
+def get_session_metrics(token: str = Depends(oauth2_scheme)):
+    """
+    Endpoint de auditoria. Devuelve métricas calculadas sobre todas las sesiones.
+    """
+    payload = decode_access_token(token)
+    user_id = payload.get("user_id")
+    metrics = session_service.get_metrics_for_user(user_id)
+    return metrics

@@ -2,6 +2,7 @@ from typing import Optional
 from datetime import datetime
 import json
 from fastapi import HTTPException, status
+from app.utils.device import parse_user_agent
 
 
 class SessionService:
@@ -33,17 +34,40 @@ class SessionService:
         key = self._session_key(user_id, device_id)
         now = datetime.utcnow().isoformat()
 
+        # 4.4 Etiquetado Semántico
+        parsed = parse_user_agent(user_agent)
+        os_name = parsed["os"]
+        browser = parsed["browser"]
+        
+        device_type = self._calculate_device_type(os_name, browser)
+        trust_level = self._calculate_trust_level(ip)
+
         session_data = {
             "session_id": f"{user_id}:{device_id}",
             "user_id": user_id,
             "device_id": device_id,
             "jti": jti,
+            "os": os_name,
+            "browser": browser,
+            "device_type": device_type,
+            "trust_level": trust_level,
             "initial_ip": ip,
             "initial_user_agent": user_agent,
             "last_ip": ip,
             "last_user_agent": user_agent,
             "last_access": now,
+            
+            # --- Fase 5 (Métricas extendidas) ---
+            "first_refresh_at": None,
+            "last_refresh_at": None,
             "refresh_count": 0,
+            "failed_refresh_attempts": 0,
+            "country": "Unknown",
+            "city": "Unknown",
+            "login_method": "password",
+            "device_trust_score": 100 if trust_level == "high" else 50,
+            "session_quality_score": 100,
+            
             "created_at": now,
             "expires_at": expires_at.isoformat(),
         }
@@ -55,6 +79,24 @@ class SessionService:
         self.redis.set(self._jti_key(jti), device_id, ex=ttl)
 
         return session_data
+
+    # -----------------------------
+    # 4.4 - Helper Semantic Labels
+    # -----------------------------
+    def _calculate_device_type(self, os_name: str, browser: str) -> str:
+        mobile_os = ["Android", "iOS"]
+        if os_name in mobile_os:
+            return "mobile"
+        if os_name in ["Windows", "Mac OS", "Linux", "Mac OS X"]:
+            return "desktop"
+        return "unknown"
+
+    def _calculate_trust_level(self, ip: str, is_known_ip: bool = False) -> str:
+        """
+        Calcula trust_level alto si la IP se encuentra en las 3 más frecuentes/recientes,
+        'medium' si no. (Mockup funcional preparatorio).
+        """
+        return "high" if is_known_ip else "medium"
 
     # -----------------------------
     # 2. Obtener todas las sesiones de un usuario
@@ -137,26 +179,39 @@ class SessionService:
 
         session = json.loads(raw)
 
-        # 2. Verificar correspondencia de JTI (Token replay) (3.1)
+        # 2. Verificar correspondencia de JTI (Token replay)
         if session.get("jti") != jti:
-            # Posible ataque. Revocamos la sesión comprometida. (3.6)
+            session["failed_refresh_attempts"] = session.get("failed_refresh_attempts", 0) + 1
+            session["session_quality_score"] = max(0, session.get("session_quality_score", 100) - 50)
+            self._save_session_changes(key, session)
             self.delete_session(user_id, device_id)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Token comprometido o previamente usado. Sesión terminada por seguridad."
             )
 
-        # 3. Detección de robo/fraude de contexto (Cookie theft / Anomalous Refresh) (3.7)
-        # Relajado: Podemos auditar o bloquear si el user-agent cambia drásticamente.
-        # Por ejemplo, de Windows Chrome a iPhone Safari
-        """
-        # (Ejemplo de consistencia básica) 
-        if session.get("initial_user_agent") != user_agent:
-            # En entorno móvil podría cambiar ligeramente. Se puede implementar lógica más tolerante.
-            # Aquí lo auditaríamos.
-            pass
-        """
+        # 3. Detección de anomalías en rotación
+        changes_detected = False
+        if session.get("last_ip") != ip:
+            session["session_quality_score"] = max(0, session.get("session_quality_score", 100) - 20)
+            session["failed_refresh_attempts"] = session.get("failed_refresh_attempts", 0) + 1
+            changes_detected = True
+
+        if session.get("last_user_agent") != user_agent:
+            session["session_quality_score"] = max(0, session.get("session_quality_score", 100) - 40)
+            session["failed_refresh_attempts"] = session.get("failed_refresh_attempts", 0) + 1
+            changes_detected = True
+
+        if changes_detected:
+            self._save_session_changes(key, session)
+
         return session
+
+    def _save_session_changes(self, key: str, session_data: dict):
+        """Helper para reguardar sesión cuando la mutamos durante validación."""
+        ttl = self.redis.ttl(key)
+        if ttl > 0:
+            self.redis.set(key, json.dumps(session_data), ex=ttl)
 
     # -----------------------------
     # 6. Actualizar JTI (Token rotation / Auditoría 3.4)
@@ -182,9 +237,16 @@ class SessionService:
         # Auditoría y actualización (3.4)
         session["jti"] = new_jti
         session["expires_at"] = new_expires_at.isoformat()
-        session["last_access"] = datetime.utcnow().isoformat()
+        
+        now = datetime.utcnow().isoformat()
+        session["last_access"] = now
         session["last_ip"] = current_ip
         session["last_user_agent"] = current_user_agent
+        
+        # Auditoría 5.1
+        if not session.get("first_refresh_at"):
+            session["first_refresh_at"] = now
+        session["last_refresh_at"] = now
         session["refresh_count"] = session.get("refresh_count", 0) + 1
 
         ttl = int((new_expires_at - datetime.utcnow()).total_seconds())
@@ -197,3 +259,65 @@ class SessionService:
         self.redis.set(self._jti_key(new_jti), device_id, ex=ttl)
 
         return True
+
+    # -----------------------------
+    # Fase 5 - Auditoría y Métricas Empresariales
+    # -----------------------------
+    def get_metrics_for_user(self, user_id: int) -> dict:
+        """
+        Retorna un hash comprensible con toda la analítica consolidada de las sesiones
+        del usuario. Cumple la funcionalidad de Fase 5 para el dashboard de auditoría y admin.
+        """
+        sessions = self.get_sessions(user_id)
+        
+        metrics = {
+            "active_sessions_count": len(sessions),
+            "total_refreshes": 0,
+            "failed_refresh_attempts": 0,
+            "top_browsers": {},
+            "top_os": {},
+            "locations": {},
+            "suspicious_sessions": []
+        }
+
+        for s in sessions:
+            metrics["total_refreshes"] += s.get("refresh_count", 0)
+            metrics["failed_refresh_attempts"] += s.get("failed_refresh_attempts", 0)
+            
+            browser = s.get("browser", "Unknown")
+            metrics["top_browsers"][browser] = metrics["top_browsers"].get(browser, 0) + 1
+            
+            os = s.get("os", "Unknown")
+            metrics["top_os"][os] = metrics["top_os"].get(os, 0) + 1
+            
+            loc = s.get("country", "Unknown")
+            metrics["locations"][loc] = metrics["locations"].get(loc, 0) + 1
+            
+            # --- 5.3 Regla de Sesiones Sospechosas ---
+            reasons = []
+            if s.get("failed_refresh_attempts", 0) >= 3:
+                reasons.append("many_failed_refresh")
+            if s.get("device_trust_score", 100) <= 30:
+                reasons.append("low_trust_score")
+            if s.get("session_quality_score", 100) <= 40:
+                reasons.append("low_quality_score")
+            
+            if s.get("initial_ip") != s.get("last_ip"):
+                reasons.append("ip_changed_across_refreshes")
+            if s.get("initial_user_agent") != s.get("last_user_agent"):
+                reasons.append("user_agent_changed")
+                
+            # Flooding temporal (Ej: más de 20 refreshes en los primeros 10 minutos de vida)
+            created_at = datetime.fromisoformat(s.get("created_at"))
+            minutes_alive = max(1.0, (datetime.utcnow() - created_at).total_seconds() / 60.0)
+            refresh_rate = s.get("refresh_count", 0) / minutes_alive
+            if refresh_rate > 2.0:  # arbitrary threshold
+                reasons.append("high_token_refresh_rate (token-flood)")
+
+            if reasons:
+                metrics["suspicious_sessions"].append({
+                    "device_id": s.get("device_id"),
+                    "reasons": reasons
+                })
+                
+        return metrics
