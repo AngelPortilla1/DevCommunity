@@ -15,7 +15,7 @@ from app.auth.auth_handler import (
     REFRESH_TOKEN_EXPIRE_DAYS
 )
 from app.schemas import UserCreate, UserLogin, RefreshTokenRequest
-from app.schemas.session import SessionOut
+from app.models.session import SessionOut
 from datetime import datetime, timedelta
 from jose import jwt
 from app.core.redis import redis_client
