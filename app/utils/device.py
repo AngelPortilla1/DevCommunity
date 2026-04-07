@@ -46,5 +46,7 @@ def generate_device_id(request) -> str:
     ip = extract_ip(request)
     parsed = parse_user_agent(ua)
     
-    raw = f"{parsed['os']}-{parsed['browser']}-{ip}"
+    # Usamos OS, Navegador, IP y el UA completo para máxima entropía.
+    # Esto evita colisiones entre distintos navegadores (Chrome/Firefox) en la misma máquina.
+    raw = f"{parsed['os']}-{parsed['browser']}-{ip}-{ua}"
     return hashlib.sha256(raw.encode()).hexdigest()
