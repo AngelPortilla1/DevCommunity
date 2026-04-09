@@ -23,7 +23,7 @@ from app.services.session_service import SessionService
 from app.utils.device import extract_ip, extract_user_agent, generate_device_id
 
 session_service = SessionService(redis_client)
-from app.auth.auth_bearer import JWTBearer
+
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException
 
@@ -82,14 +82,21 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         "user": new_user.username
     }
 
+from fastapi.security import OAuth2PasswordRequestForm
+
 @router.post("/login")
-def login_user(credentials: UserLogin, request: Request, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == credentials.email).first()
+def login_user(
+    request: Request, 
+    form_data: OAuth2PasswordRequestForm = Depends(), 
+    db: Session = Depends(get_db)
+):
+    # form_data.username se usa para recibir el email, ya que así lo define el estándar OAuth2
+    user = db.query(User).filter(User.email == form_data.username).first()
     if not user:
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
     # Verificar contraseña
-    if not verify_password(credentials.password, user.hashed_password):
+    if not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
     access_token = create_access_token({"sub": user.email,"user_id": user.id})
