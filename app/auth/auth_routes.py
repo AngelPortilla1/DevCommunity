@@ -24,10 +24,12 @@ from app.utils.device import extract_ip, extract_user_agent, generate_device_id
 
 session_service = SessionService(redis_client)
 
-from fastapi.security import OAuth2PasswordBearer
-from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+security = HTTPBearer()
+
+def oauth2_scheme(auth = Depends(security)):
+    return auth.credentials
 
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
