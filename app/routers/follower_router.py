@@ -25,3 +25,21 @@ def unfollow_user(
     service: FollowerService = Depends(get_follower_service)
 ):
     return service.unfollow_user(follower_id=current_user.id, followed_id=user_id)
+
+from app.models.post import Post
+from app.models.follows import Follow
+
+@router.get("/{user_id}/stats")
+def get_user_stats(
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+    posts_count = db.query(Post).filter(Post.author_id == user_id).count()
+    followers_count = db.query(Follow).filter(Follow.followed_id == user_id).count()
+    following_count = db.query(Follow).filter(Follow.follower_id == user_id).count()
+    
+    return {
+        "posts_count": posts_count,
+        "followers_count": followers_count,
+        "following_count": following_count
+    }
