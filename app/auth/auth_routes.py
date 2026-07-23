@@ -62,9 +62,13 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
             detail="La contraseña debe tener al menos 8 caracteres"
         )
     
-    existing_user = db.query(User).filter(User.email == user.email).first()
-    if existing_user:
+    existing_email = db.query(User).filter(User.email == user.email).first()
+    if existing_email:
         raise HTTPException(status_code=400, detail="Email ya está registrado")
+        
+    existing_username = db.query(User).filter(User.username == user.username).first()
+    if existing_username:
+        raise HTTPException(status_code=400, detail="Nombre de usuario ya está registrado")
 
     # Hashear contraseña
     hashed_password = hash_password(user.password)
