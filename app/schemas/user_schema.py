@@ -1,4 +1,11 @@
+from enum import Enum
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
+
+
+class UserRole(str, Enum):
+    """Roles válidos que puede tener un usuario en el sistema."""
+    user  = "user"
+    admin = "admin"
 
 class UserCreate(BaseModel):
     """Esquema para la creación de un nuevo usuario."""

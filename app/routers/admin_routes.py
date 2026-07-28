@@ -6,6 +6,7 @@ from app.models.user import User
 from app.core.dependencies import admin_only
 from app.core.redis import redis_client
 from app.services.session_service import SessionService
+from app.schemas.user_schema import UserRole
 
 session_service = SessionService(redis_client)
 
@@ -22,7 +23,7 @@ def get_all_users(
 @router.put("/users/{user_id}/role")
 def update_role(
     user_id: int,
-    role: str,
+    role: UserRole,
     db: Session = Depends(get_db),
     current_admin: User = Depends(admin_only)
 ):
@@ -31,7 +32,7 @@ def update_role(
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    user.role = role
+    user.role = role.value  # persiste el string "user" / "admin"
     db.commit()
     db.refresh(user)
 
