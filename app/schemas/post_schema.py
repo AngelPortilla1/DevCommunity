@@ -1,11 +1,26 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from app.schemas.user_schema import UserResponse
 
 class PostCreate(BaseModel):
-    title: str
-    content: str
+    title: str = Field(
+        min_length=3,
+        max_length=200,
+        description="Post title (3–200 characters)",
+    )
+    content: str = Field(
+        min_length=10,
+        max_length=50_000,
+        description="Post content (10–50,000 characters)",
+    )
+
+    @field_validator("title", "content", mode="before")
+    @classmethod
+    def strip_whitespace(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.strip()
+        return v
     
 class PostResponse(BaseModel):
     id: int
