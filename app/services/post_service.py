@@ -7,7 +7,7 @@ from app.exceptions.post_exceptions import PostNotFound, ForbiddenAction
 from app.mappers.post_mapper import map_post_to_response
 from app.repositories.follower_repository import FollowerRepository
 from datetime import date
-import math
+
 
 class PostService:
     def __init__(self, db: Session):
