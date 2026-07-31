@@ -1,16 +1,10 @@
-# app/auth/dependencies.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.core.config import settings
 from app.models.user import User
-
-# Una sola fuente de verdad: todo viene de settings (que lee .env)
-SECRET_KEY = settings.SECRET_KEY
-ALGORITHM = "HS256"
+from app.auth.auth_handler import decode_access_token
 
 # FastAPI usará este esquema para leer el token del header Authorization: Bearer <token>
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -22,22 +16,21 @@ def get_current_user(
 ) -> User:
     """
     Dependencia que extrae y valida el JWT del header Authorization.
-    - 401 si el token falta, es inválido o expiró.
+    - Verifica firma, expiración Y el blacklist de Redis (tokens revocados por logout).
+    - 401 si el token falta, es inválido, expiró o fue revocado.
     - 404 si el usuario del token ya no existe en la BD.
     """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="No autenticado: token inválido o expirado",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+    # decode_access_token ya verifica: firma, expiración, tipo y blacklist de Redis.
+    # Lanza HTTP 401 automáticamente si cualquiera de esas validaciones falla.
+    payload = decode_access_token(token)
 
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str | None = payload.get("sub")
-        if email is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
+    email: str | None = payload.get("sub")
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No autenticado: token inválido o expirado",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     user = db.query(User).filter(User.email == email).first()
     if user is None:
