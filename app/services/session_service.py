@@ -1,5 +1,5 @@
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 from fastapi import HTTPException, status
 from app.utils.device import parse_user_agent
@@ -32,7 +32,7 @@ class SessionService:
         expires_at: datetime
     ):
         key = self._session_key(user_id, device_id)
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
 
         # 4.4 Etiquetado Semántico
         parsed = parse_user_agent(user_agent)
@@ -72,7 +72,7 @@ class SessionService:
             "expires_at": expires_at.isoformat(),
         }
 
-        ttl = int((expires_at - datetime.utcnow()).total_seconds())
+        ttl = int((expires_at - datetime.now(timezone.utc)).total_seconds())
         if ttl <= 0: return None
 
         self.redis.set(key, json.dumps(session_data), ex=ttl)
@@ -238,7 +238,7 @@ class SessionService:
         session["jti"] = new_jti
         session["expires_at"] = new_expires_at.isoformat()
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         session["last_access"] = now
         session["last_ip"] = current_ip
         session["last_user_agent"] = current_user_agent
@@ -249,7 +249,7 @@ class SessionService:
         session["last_refresh_at"] = now
         session["refresh_count"] = session.get("refresh_count", 0) + 1
 
-        ttl = int((new_expires_at - datetime.utcnow()).total_seconds())
+        ttl = int((new_expires_at - datetime.now(timezone.utc)).total_seconds())
         if ttl <= 0: return False
 
         self.redis.set(key, json.dumps(session), ex=ttl)
@@ -309,7 +309,7 @@ class SessionService:
                 
             # Flooding temporal (Ej: más de 20 refreshes en los primeros 10 minutos de vida)
             created_at = datetime.fromisoformat(s.get("created_at"))
-            minutes_alive = max(1.0, (datetime.utcnow() - created_at).total_seconds() / 60.0)
+            minutes_alive = max(1.0, (datetime.now(timezone.utc) - created_at).total_seconds() / 60.0)
             refresh_rate = s.get("refresh_count", 0) / minutes_alive
             if refresh_rate > 2.0:  # arbitrary threshold
                 reasons.append("high_token_refresh_rate (token-flood)")

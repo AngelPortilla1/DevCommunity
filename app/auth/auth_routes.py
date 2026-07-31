@@ -18,7 +18,7 @@ from app.auth.auth_handler import (
 )
 from app.schemas import UserCreate, UserLogin, RefreshTokenRequest
 from app.models.session import SessionOut
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jose import jwt
 from app.core.redis import redis_client
 from app.services.session_service import SessionService
@@ -114,7 +114,7 @@ def login_user(
     ip = extract_ip(request)
     ua = extract_user_agent(request)
     device_id = generate_device_id(request)
-    expires_at = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    expires_at = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     
     session_service.create_session(
         user_id=user.id,
@@ -158,7 +158,7 @@ def refresh_token(request_data: RefreshTokenRequest, request: Request, db: Sessi
     ip = extract_ip(request)
     ua = extract_user_agent(request)
     device_id = generate_device_id(request)
-    new_expires_at = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    new_expires_at = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     
     updated = session_service.update_jti_for_session(
         user_id=user_id,
