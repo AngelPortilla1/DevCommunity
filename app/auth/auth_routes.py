@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 import bcrypt
 import hashlib
+import json
 from app.db.session import get_db
 from app.models.user import User
 from app.auth.auth_handler import (
@@ -23,8 +25,6 @@ from app.services.session_service import SessionService
 from app.utils.device import extract_ip, extract_user_agent, generate_device_id
 
 session_service = SessionService(redis_client)
-
-from fastapi.security import HTTPBearer
 
 security = HTTPBearer()
 
@@ -250,7 +250,6 @@ def get_current_session(request: Request, token: str = Depends(oauth2_scheme)):
     if not raw:
         raise HTTPException(status_code=404, detail="Sesión no encontrada o ha expirado")
         
-    import json
     session_data = json.loads(raw)
     return SessionOut.from_redis_hash(session_data, current_device_id=device_id)
 
