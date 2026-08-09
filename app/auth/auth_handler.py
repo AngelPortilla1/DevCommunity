@@ -5,6 +5,7 @@ from jose import JWTError, jwt
 from fastapi import HTTPException, status
 from app.core.config import settings
 from app.core.redis import redis_client
+from redis.exceptions import RedisError
 
 # Leemos la clave y algoritmo desde settings (que los toma del .env)
 SECRET_KEY = settings.SECRET_KEY
@@ -32,11 +33,17 @@ def create_refresh_token(data: dict) -> str:
     
     # Store in Redis: refresh_token:{jti} -> user_id
     user_id = data.get("user_id") or data.get("sub")
-    redis_client.setex(
-        f"refresh_token:{jti}",
-        timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
-        str(user_id)
-    )
+    try:
+        redis_client.setex(
+            f"refresh_token:{jti}",
+            timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
+            str(user_id)
+        )
+    except RedisError as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Servicio de sesiones no disponible. Inténtalo de nuevo más tarde."
+        ) from e
     
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
