@@ -36,8 +36,6 @@ class PostService:
         order: str = "recent"
     ):
         filter_author_id = author_id
-        if current_user.role != "admin":
-            filter_author_id = current_user.id
             
         total, posts = self.repository.get_paginated_posts(
             page=page,
