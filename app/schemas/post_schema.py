@@ -14,8 +14,12 @@ class PostCreate(BaseModel):
         max_length=50_000,
         description="Post content (10–50,000 characters)",
     )
+    image_url: str = Field(
+        min_length=5,
+        description="URL de la imagen del post (obligatorio)",
+    )
 
-    @field_validator("title", "content", mode="before")
+    @field_validator("title", "content", "image_url", mode="before")
     @classmethod
     def strip_whitespace(cls, v: str) -> str:
         if isinstance(v, str):
@@ -26,14 +30,15 @@ class PostResponse(BaseModel):
     id: int
     title: str
     content: str
+    image_url: str
     likes_count: int
     comments_count: int
     liked_by_me: bool
     created_at: datetime | None = None
     updated_at: datetime | None = None
-    
-    author: Optional["UserResponse"] = None 
-    
+
+    author: Optional["UserResponse"] = None
+
     model_config = ConfigDict(from_attributes=True)
 
 class PaginatedPosts(BaseModel):

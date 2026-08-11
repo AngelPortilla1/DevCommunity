@@ -20,6 +20,7 @@ class PostService:
         new_post = self.repository.create(
             title=post_data.title,
             content=post_data.content,
+            image_url=post_data.image_url,
             author_id=current_user.id
         )
         return map_post_to_response(new_post, liked_by_me=False)
@@ -90,7 +91,7 @@ class PostService:
         if post.author_id != current_user.id:
             raise ForbiddenAction()
 
-        updated_post = self.repository.update(post, post_data.title, post_data.content)
+        updated_post = self.repository.update(post, post_data.title, post_data.content, post_data.image_url)
         
         liked_by_me = any(like.user_id == current_user.id for like in updated_post.likes)
 

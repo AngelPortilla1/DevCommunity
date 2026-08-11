@@ -9,6 +9,7 @@ def map_post_to_response(
         "id": post.id,
         "title": post.title,
         "content": post.content,
+        "image_url": post.image_url,
         "created_at": post.created_at,
         "author": post.author,
         "likes_count": post.likes_count,

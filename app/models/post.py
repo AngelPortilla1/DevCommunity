@@ -10,13 +10,14 @@ class Post(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
     content = Column(Text, nullable=False)
+    image_url = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(
         DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
-    
+
     likes_count = Column(Integer, default=0, nullable=False)
     comments_count = Column(Integer, default=0, nullable=False)
 

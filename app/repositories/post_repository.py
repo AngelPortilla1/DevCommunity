@@ -8,10 +8,11 @@ class PostRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, title: str, content: str, author_id: int):
+    def create(self, title: str, content: str, image_url: str, author_id: int):
         new_post = Post(
             title=title,
             content=content,
+            image_url=image_url,
             author_id=author_id
         )
         self.db.add(new_post)
@@ -88,9 +89,10 @@ class PostRepository:
         )
         return {post_id for (post_id,) in user_likes}
 
-    def update(self, post: Post, title: str, content: str):
+    def update(self, post: Post, title: str, content: str, image_url: str):
         post.title = title
         post.content = content
+        post.image_url = image_url
         self.db.commit()
         self.db.refresh(post)
         return post
