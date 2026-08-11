@@ -32,6 +32,7 @@ class PostService:
         author_id: int | None,
         from_date: date | None,
         to_date: date | None,
+        since_hours: int | None,
         current_user: User,
         order: str = "recent"
     ):
@@ -44,6 +45,7 @@ class PostService:
             author_id=filter_author_id,
             from_date=from_date,
             to_date=to_date,
+            since_hours=since_hours,
             order=order
         )
 

@@ -32,6 +32,7 @@ def get_posts(
     author_id: int | None = Query(None),
     from_date: date | None = Query(None),
     to_date: date | None = Query(None),
+    since_hours: int | None = Query(None),
     current_user: User = Depends(get_current_user),
     service: PostService = Depends(get_post_service)
 ):
@@ -42,6 +43,7 @@ def get_posts(
         author_id=author_id,
         from_date=from_date,
         to_date=to_date,
+        since_hours=since_hours,
         current_user=current_user,
         order=order
     )

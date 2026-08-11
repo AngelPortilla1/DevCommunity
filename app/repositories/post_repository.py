@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import or_, func
 from app.models.post import Post
 from app.models.like import Like
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 
 class PostRepository:
     def __init__(self, db: Session):
@@ -36,6 +36,7 @@ class PostRepository:
         author_id: int | None = None,
         from_date: date | None = None,
         to_date: date | None = None,
+        since_hours: int | None = None,
         order: str = "recent"
     ):
         query = self.db.query(Post).options(selectinload(Post.author))
@@ -58,6 +59,10 @@ class PostRepository:
         if to_date:
             end_datetime = datetime.combine(to_date, time.max)
             query = query.filter(Post.created_at <= end_datetime)
+
+        if since_hours:
+            start_datetime = datetime.utcnow() - timedelta(hours=since_hours)
+            query = query.filter(Post.created_at >= start_datetime)
 
         total = query.count()
         
