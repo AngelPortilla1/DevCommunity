@@ -3,7 +3,7 @@ from app.auth import auth_routes
 from app.db.base import Base
 from app.db.session import engine
 from app.models import user, post, comment, like, follows
-from app.routers import post_router, comment_router, like_router, follower_router, admin_routes
+from app.routers import post_router, comment_router, like_router, follower_router, admin_routes, notification_router
 from app.exceptions.base import AppException
 from app.core.exceptions_handlers import app_exception_handler
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,6 +32,7 @@ app.include_router(comment_router.router)
 app.include_router(like_router.router)
 app.include_router(follower_router.router)
 app.include_router(admin_routes.router)
+app.include_router(notification_router.router)
 
 @app.get("/")
 def root():

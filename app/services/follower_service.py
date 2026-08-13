@@ -2,11 +2,13 @@ from sqlalchemy.orm import Session
 from app.repositories.follower_repository import FollowerRepository
 from fastapi import HTTPException
 from app.models.user import User
+from app.services.notification_service import NotificationService
 
 class FollowerService:
     def __init__(self, db: Session):
         self.db = db
         self.repository = FollowerRepository(db)
+        self.notification_service = NotificationService(db)
 
     def follow_user(self, follower_id: int, followed_id: int):
         if follower_id == followed_id:
@@ -19,8 +21,16 @@ class FollowerService:
         existing_follow = self.repository.get_follow(follower_id, followed_id)
         if existing_follow:
             raise HTTPException(status_code=400, detail="Already following this user")
-            
-        return self.repository.create(follower_id, followed_id)
+
+        result = self.repository.create(follower_id, followed_id)
+
+        # Notificar al usuario seguido
+        self.notification_service.notify_follow(
+            followed_id=followed_id,
+            follower_id=follower_id,
+        )
+
+        return result
 
     def unfollow_user(self, follower_id: int, followed_id: int):
         follow = self.repository.get_follow(follower_id, followed_id)

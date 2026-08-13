@@ -5,11 +5,13 @@ from app.models.user import User
 from app.exceptions.comment_exceptions import CommentNotFound, ForbiddenCommentAction
 from app.exceptions.post_exceptions import PostNotFound
 from app.schemas import CommentCreate, CommentUpdate
+from app.services.notification_service import NotificationService
 
 class CommentService:
     def __init__(self, db: Session):
         self.db = db
         self.repository = CommentRepository(db)
+        self.notification_service = NotificationService(db)
 
     def create_comment(self, post_id: int, comment_data: CommentCreate, current_user: User):
         # Validar si el post existe. Lo hacemos a través del db central (o podríamos tener un PostRepository)
@@ -27,7 +29,14 @@ class CommentService:
         if po:
             po.comments_count += 1
             self.db.commit()
-            
+
+        # Notificar al autor del post
+        self.notification_service.notify_comment(
+            post_author_id=post.author_id,
+            actor_id=current_user.id,
+            post_id=post_id,
+        )
+
         return new_comment
 
     def get_comments_by_post(self, post_id: int):
