@@ -74,7 +74,11 @@ Model / DB (SQLAlchemy + SQLite / PostgreSQL)
 
 Las sesiones, métricas de dispositivos y tokens revocados se gestionan en una capa independiente con **Redis**, garantizando alto rendimiento sin sobrecargar la base de datos relacional.
 
-### Flujo de autenticación
+### Flujo de autenticación y autorización
+
+<p align="center">
+  <img src="assets/auth_security_flow.png" alt="Flujo de Autenticación y Autorización API" width="680"/>
+</p>
 
 ```
 POST /auth/login (o /auth/token para Swagger)
