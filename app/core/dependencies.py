@@ -6,8 +6,9 @@ from app.db.session import get_db
 from app.models.user import User
 from app.auth.auth_handler import decode_access_token
 
-# FastAPI usará este esquema para leer el token del header Authorization: Bearer <token>
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+# OAuth2PasswordBearer: esquema estándar para APIs con JWT + sesiones.
+# tokenUrl le indica a Swagger dónde obtener el token.
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
 def get_current_user(
