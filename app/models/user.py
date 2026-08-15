@@ -16,3 +16,5 @@ class User(Base):
     likes = relationship("Like", back_populates="user", cascade="all, delete-orphan")
     role = Column(String, default="user")  # "user" o "admin"
     comments = relationship("Comment", back_populates="author", cascade="all, delete")
+    saved_posts = relationship("SavedPost", back_populates="user", cascade="all, delete-orphan")
+
