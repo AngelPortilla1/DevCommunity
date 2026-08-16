@@ -5,4 +5,6 @@ from app.models.like import Like
 from app.models.follows import Follow
 from app.models.notification import Notification
 from app.models.saved_post import SavedPost
+from app.models.conversation import Conversation, Message
+
 
