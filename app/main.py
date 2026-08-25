@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+﻿from fastapi import FastAPI
 from app.auth import auth_routes
 from app.db.base import Base
 from app.db.session import engine
@@ -12,6 +12,7 @@ from app.routers import (
     notification_router,
     saved_router,
     message_router,
+    user_router,
 )
 from app.exceptions.base import AppException
 from app.core.exceptions_handlers import app_exception_handler
@@ -44,7 +45,7 @@ app.include_router(admin_routes.router)
 app.include_router(notification_router.router)
 app.include_router(saved_router.router)
 app.include_router(message_router.router)
-
+app.include_router(user_router.router)
 
 
 @app.get("/")
