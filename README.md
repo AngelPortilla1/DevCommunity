@@ -80,6 +80,14 @@ Las sesiones, métricas de dispositivos y tokens revocados se gestionan en una c
   <img src="assets/auth_security_flow.png" alt="Flujo de Autenticación y Autorización API" width="680"/>
 </p>
 
+### Diagrama de secuencia detallado
+
+> Generado con [Archify](https://github.com/tt-a1i/archify) · cubre Login, Token Refresh, Ruta Protegida y Logout.
+
+<p align="center">
+  <img src="assets/devcommunity-flujo-de-autenticaci-n.svg" alt="Diagrama de secuencia — Autenticación DevCommunity"/>
+</p>
+
 ```
 POST /auth/login (o /auth/token para Swagger)
       │
