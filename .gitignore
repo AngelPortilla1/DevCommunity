@@ -53,5 +53,5 @@ seed_devcommunity.py
 git_log_commits.json
 devcommunity.db
 *db
-
+diagrama.html
 test_auth.py
