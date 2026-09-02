@@ -13,7 +13,7 @@ __pycache__/
 .env.production
 
 # Archivos de texto temporales / de prueba / notas
-*.txt
+
 !README.txt
 !LICENSE.txt
 notas.txt
