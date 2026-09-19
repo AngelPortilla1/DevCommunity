@@ -1,4 +1,4 @@
-﻿from fastapi import FastAPI
+from fastapi import FastAPI
 from app.auth import auth_routes
 from app.db.base import Base
 from app.db.session import engine
@@ -23,7 +23,7 @@ app = FastAPI(title="DevCommunity API", version="0.1.0")
 # Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200", "http://localhost:4201", "http://localhost:52924", "http://127.0.0.1:52924"],  # Puertos del frontend
+    allow_origins=["http://localhost:4200", "http://localhost:4201", "http://127.0.0.1:4200", "http://localhost:52924", "http://127.0.0.1:52924"],  # Puertos del frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
