@@ -114,7 +114,6 @@ POST /auth/logout
 DevCommunity/
 ├── app/
 │   ├── main.py                  # Punto de entrada, middlewares (CORS), handlers y routers
-│   ├── api/                     # Rutas de prueba / health check
 │   ├── auth/                    # Lógica de autenticación (JWT, bcrypt, rutas)
 │   │   ├── auth_handler.py      # Creación/verificación de tokens y revocación en Redis
 │   │   ├── auth_routes.py       # Endpoints: register, login, token, refresh, logout, me, sessions
