@@ -55,3 +55,6 @@ devcommunity.db
 *db
 diagrama.html
 test_auth.py
+test_session.py
+test_sessions_api.py
+test_roles_permissions.py   
